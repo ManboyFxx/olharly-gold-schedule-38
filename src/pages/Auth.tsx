@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils';
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const [isProfessional, setIsProfessional] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
@@ -153,6 +154,23 @@ const Auth = () => {
                   className="input-elegant"
                   placeholder="Digite seu nome completo"
                 />
+              </div>
+            )}
+            
+            {isLogin && (
+              <div className="space-y-4">
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="professional"
+                    checked={isProfessional}
+                    onChange={(e) => setIsProfessional(e.target.checked)}
+                    className="rounded border-input"
+                  />
+                  <Label htmlFor="professional" className="text-sm">
+                    Sou profissional
+                  </Label>
+                </div>
               </div>
             )}
             

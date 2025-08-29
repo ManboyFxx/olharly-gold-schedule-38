@@ -79,12 +79,12 @@ const UserCard: React.FC<UserCardProps> = ({ user, onToggleUser, onDeleteUser, i
             variant="outline"
             size="sm"
             onClick={() => onToggleUser(user.id, user.is_active)}
-            disabled={isToggling || user.role === 'super_admin'}
+            disabled={isToggling || user.role === 'super_admin' || user.role === 'organization_admin'}
           >
             {isToggling ? 'Processando...' : user.is_active ? 'Desativar' : 'Ativar'}
           </Button>
           
-          {user.role !== 'super_admin' && (
+          {user.role !== 'super_admin' && user.role !== 'organization_admin' && (
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button 
@@ -117,9 +117,11 @@ const UserCard: React.FC<UserCardProps> = ({ user, onToggleUser, onDeleteUser, i
             </AlertDialog>
           )}
           
-          <Button variant="ghost" size="sm">
-            <Settings className="w-4 h-4" />
-          </Button>
+          {user.role !== 'organization_admin' && (
+            <Button variant="ghost" size="sm">
+              <Settings className="w-4 h-4" />
+            </Button>
+          )}
         </div>
       </div>
     </Card>

@@ -3,6 +3,7 @@ import React from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
+import { useUserProfile } from '@/hooks/useUserProfile';
 import { 
   Calendar, 
   Users, 
@@ -18,12 +19,22 @@ import {
 const Sidebar = () => {
   const location = useLocation();
   const { user } = useAuth();
+  const { profile } = useUserProfile();
 
-  const isProfessional = user && ['professional', 'organization_admin', 'super_admin'].includes(user.role || '');
+  const isProfessional = profile?.role === 'professional';
+  const isAdmin = profile?.role === 'organization_admin' || profile?.role === 'super_admin';
   
-  console.log('User role:', user?.role, 'isProfessional:', isProfessional);
+  // Navegação para profissionais (apenas calendário)
+  const professionalNavigation = [
+    {
+      name: 'Meu Calendário',
+      href: '/professional-calendar',
+      icon: Calendar,
+    },
+  ];
 
-  const navigation = [
+  // Navegação para administradores (todas as opções)
+  const adminNavigation = [
     {
       name: 'Dashboard',
       href: '/dashboard',
@@ -66,7 +77,7 @@ const Sidebar = () => {
     },
   ];
 
-  console.log('Navigation items:', navigation);
+  const navigation = isProfessional ? professionalNavigation : adminNavigation;
 
   return (
     <div className="w-64 bg-background border-r border-border h-full">

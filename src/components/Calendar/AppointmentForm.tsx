@@ -11,6 +11,7 @@ import { useAppointments } from '@/hooks/useAppointments';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useProfiles } from '@/hooks/useProfiles';
 import { cn } from '@/lib/utils';
 
 interface AppointmentFormProps {
@@ -29,12 +30,14 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
   const { user } = useAuth();
   const { toast } = useToast();
   const isMobile = useIsMobile();
+  const { professionals } = useProfiles();
 
   const [formData, setFormData] = useState({
     client_name: '',
     client_email: '',
     client_phone: '',
     service_id: '',
+    professional_id: '',
     scheduled_date: selectedDate.toISOString().split('T')[0],
     scheduled_time: '',
     notes: '',
@@ -53,6 +56,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
           client_email: appointment.client_email || '',
           client_phone: appointment.client_phone || '',
           service_id: appointment.service_id,
+          professional_id: appointment.professional_id || '',
           scheduled_date: scheduledDate.toISOString().split('T')[0],
           scheduled_time: scheduledDate.toTimeString().slice(0, 5),
           notes: appointment.notes || '',
@@ -65,7 +69,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.service_id || !formData.scheduled_date || !formData.scheduled_time) {
+    if (!formData.service_id || !formData.professional_id || !formData.scheduled_date || !formData.scheduled_time) {
       toast({
         title: 'Erro',
         description: 'Preencha todos os campos obrigatórios',
@@ -84,7 +88,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
         client_email: formData.client_email,
         client_phone: formData.client_phone,
         service_id: formData.service_id,
-        professional_id: user?.id,
+        professional_id: formData.professional_id,
         scheduled_at: scheduledAt.toISOString(),
         notes: formData.notes,
         client_notes: formData.client_notes,
@@ -267,6 +271,37 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
                       <span className="text-muted-foreground">
                         ({service.duration_minutes}min)
                       </span>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="professional_id" className={cn(
+              isMobile ? "text-base font-medium" : ""
+            )}>Profissional *</Label>
+            <Select
+              value={formData.professional_id}
+              onValueChange={(value) => setFormData(prev => ({ ...prev, professional_id: value }))}
+            >
+              <SelectTrigger className={cn(
+                isMobile ? "h-12 text-base px-4" : ""
+              )}>
+                <SelectValue placeholder="Selecione um profissional" />
+              </SelectTrigger>
+              <SelectContent>
+                {professionals.filter(p => p.role === 'professional' || p.role === 'organization_admin').map((professional) => (
+                  <SelectItem key={professional.id} value={professional.id}>
+                    <div className="flex items-center space-x-2">
+                      <User className="w-4 h-4 text-muted-foreground" />
+                      <span>{professional.full_name}</span>
+                      {professional.title && (
+                        <span className="text-muted-foreground text-sm">
+                          ({professional.title})
+                        </span>
+                      )}
                     </div>
                   </SelectItem>
                 ))}

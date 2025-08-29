@@ -61,7 +61,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         // Só redirecionar se estivermos na página de auth
         if (window.location.pathname === '/auth') {
           if (userData.role === 'professional') {
-            window.location.href = '/my-booking';
+            window.location.href = '/professional-calendar';
           } else {
             window.location.href = '/dashboard';
           }

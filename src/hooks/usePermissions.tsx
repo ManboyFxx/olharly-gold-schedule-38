@@ -70,19 +70,28 @@ export const usePermissions = () => {
       const currentMonth = new Date().toISOString().slice(0, 7); // "2024-01"
       
       // Get current month usage
-      const { data: usage } = await supabase
+      const { data: usage, error: usageError } = await supabase
         .from('subscription_usage')
         .select('*')
         .eq('organization_id', organization.id)
         .eq('month_year', currentMonth)
-        .single();
+        .maybeSingle();
+
+      // Log any errors that occur
+      if (usageError) {
+        console.error('Error fetching usage stats:', usageError);
+      }
 
       // Count professionals in organization
-      const { data: professionals } = await supabase
+      const { data: professionals, error: profError } = await supabase
         .from('users')
         .select('id')
         .eq('organization_id', organization.id)
         .neq('role', 'client');
+
+      if (profError) {
+        console.error('Error fetching professionals count:', profError);
+      }
 
       return {
         appointmentsThisMonth: usage?.appointments_count || 0,

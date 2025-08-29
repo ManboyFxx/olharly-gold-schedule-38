@@ -11,6 +11,7 @@ type UserRole = Database['public']['Enums']['user_role'];
 interface ProfessionalProfile {
   id: string;
   full_name: string;
+  display_name?: string;
   email: string;
   title?: string;
   bio?: string;

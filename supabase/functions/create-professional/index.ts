@@ -47,7 +47,7 @@ serve(async (req) => {
     // Criar usuário no auth.users (usando service role)
     const { data: newUser, error: authError } = await supabaseClient.auth.admin.createUser({
       email,
-      password: Math.random().toString(36).slice(-8) + 'Aa1!', // Senha temporária
+      password: 'souprofissional', // Senha padrão para profissionais
       email_confirm: true, // Já confirma o email automaticamente
       user_metadata: {
         full_name

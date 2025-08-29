@@ -95,8 +95,8 @@ const Header = () => {
                 <User className="w-4 h-4 text-gold-700" />
               </div>
               <div className="text-sm">
-                <p className="font-medium text-foreground">{user?.user_metadata?.full_name || 'Usuário'}</p>
-                <p className="text-xs text-muted-foreground">Administradora</p>
+                <p className="font-medium text-foreground">{user?.user_metadata?.full_name || 'Administrador'}</p>
+                <p className="text-xs text-muted-foreground">Administrador(a)</p>
               </div>
             </div>
           </div>

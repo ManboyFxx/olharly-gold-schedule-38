@@ -9,18 +9,29 @@ import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/integrations/supabase/client';
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [isProfessional, setIsProfessional] = useState(false);
+  const [isResettingPassword, setIsResettingPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     fullName: ''
   });
+
+  // Atualizar senha quando modo profissional muda
+  React.useEffect(() => {
+    if (isProfessional) {
+      setFormData(prev => ({ ...prev, password: 'souprofissional' }));
+    } else {
+      setFormData(prev => ({ ...prev, password: '' }));
+    }
+  }, [isProfessional]);
   
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, signInWithMagicLink } = useAuth();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
 
@@ -30,21 +41,58 @@ const Auth = () => {
 
     try {
       if (isLogin) {
-        const { error } = await signIn(formData.email, formData.password);
-        if (error) {
-          toast({
-            title: 'Erro no login',
-            description: error.message === 'Invalid login credentials' 
-              ? 'Email ou senha incorretos' 
-              : 'Erro ao fazer login. Tente novamente.',
-            variant: 'destructive',
-          });
+        // Se marcou como profissional, fazer login simplificado apenas com email
+        if (isProfessional) {
+          const { data: professionalExists, error: checkError } = await supabase
+            .from('users')
+            .select('id, role')
+            .eq('email', formData.email)
+            .eq('role', 'professional')
+            .single();
+
+          if (checkError || !professionalExists) {
+            toast({
+              title: 'Acesso negado',
+              description: 'Este email não está cadastrado como profissional. Entre em contato com o administrador.',
+              variant: 'destructive',
+            });
+            setLoading(false);
+            return;
+          }
+
+          // Para profissionais, fazer login direto com senha padrão
+          const { error: signInError } = await signIn(formData.email, 'souprofissional');
+          
+          if (signInError) {
+            toast({
+              title: 'Erro no login',
+              description: 'Não foi possível fazer login. Verifique se o email está correto.',
+              variant: 'destructive',
+            });
+          } else {
+            toast({
+              title: 'Login realizado com sucesso!',
+              description: 'Bem-vindo ao painel profissional',
+            });
+          }
         } else {
-          // O redirecionamento será feito pelo AuthProvider baseado no role
-          toast({
-            title: 'Login realizado com sucesso!',
-            description: 'Bem-vindo de volta ao Olharly',
-          });
+          // Login normal para administradores
+          const { error } = await signIn(formData.email, formData.password);
+          if (error) {
+            toast({
+              title: 'Erro no login',
+              description: error.message === 'Invalid login credentials' 
+                ? 'Email ou senha incorretos' 
+                : 'Erro ao fazer login. Tente novamente.',
+              variant: 'destructive',
+            });
+          } else {
+            // O redirecionamento será feito pelo AuthProvider baseado no role
+            toast({
+              title: 'Login realizado com sucesso!',
+              description: 'Bem-vindo de volta ao Olharly',
+            });
+          }
         }
       } else {
         const { error } = await signUp(formData.email, formData.password, formData.fullName);
@@ -77,6 +125,41 @@ const Auth = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleResetProfessionalPassword = async () => {
+    if (!formData.email) {
+      toast({
+        title: 'Email obrigatório',
+        description: 'Digite seu email para resetar a senha.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setIsResettingPassword(true);
+    try {
+      const { error } = await supabase.functions.invoke('reset-professional-password', {
+        body: { email: formData.email }
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      toast({
+        title: 'Senha resetada!',
+        description: 'Sua senha foi resetada para a senha padrão. Tente fazer login novamente.',
+      });
+    } catch (error: any) {
+      toast({
+        title: 'Erro ao resetar senha',
+        description: error.message || 'Não foi possível resetar a senha.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsResettingPassword(false);
+    }
   };
 
   return (
@@ -188,17 +271,19 @@ const Auth = () => {
               />
             </div>
 
+            {/* Campo de senha */}
             <div className="space-y-2">
               <Label htmlFor="password">Senha</Label>
               <Input
                 id="password"
                 name="password"
                 type="password"
-                required
+                disabled={isProfessional}
+                placeholder={isProfessional ? "Senha padrão preenchida automaticamente" : "Digite sua senha"}
+                required={!isProfessional}
                 value={formData.password}
                 onChange={handleInputChange}
                 className="input-elegant"
-                placeholder="Digite sua senha"
                 minLength={6}
               />
             </div>
@@ -213,6 +298,19 @@ const Auth = () => {
                 : (isLogin ? 'Entrar' : 'Criar conta')
               }
             </Button>
+
+            {/* Botão para resetar senha de profissional */}
+            {isLogin && isProfessional && (
+              <Button 
+                type="button"
+                variant="outline"
+                className="w-full" 
+                disabled={isResettingPassword}
+                onClick={handleResetProfessionalPassword}
+              >
+                {isResettingPassword ? 'Resetando...' : 'Esqueci minha senha'}
+              </Button>
+            )}
           </form>
 
           <div className={cn(

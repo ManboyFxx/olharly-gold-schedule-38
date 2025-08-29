@@ -1,0 +1,293 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Olharly Design System - Brand Colors & Tokens */
+
+@layer base {
+  :root {
+    /* Brand Color System */
+    --background: 43 30% 98%; /* #FDFCFB - Warm white */
+    --foreground: 32 13% 16%; /* #2A2621 - Deep earth */
+
+    --card: 43 30% 98%;
+    --card-foreground: 32 13% 16%;
+
+    --popover: 43 30% 98%;
+    --popover-foreground: 32 13% 16%;
+
+    /* Primary = Gold Brand */
+    --primary: 48 100% 45%; /* #E6B800 - Olharly Gold */
+    --primary-foreground: 32 13% 16%;
+
+    /* Secondary = Warm neutrals */
+    --secondary: 35 20% 94%; /* #F5F2ED - Light warm */
+    --secondary-foreground: 32 13% 16%;
+
+    --muted: 35 15% 91%; /* #E8E4E0 - Sand borders */
+    --muted-foreground: 32 13% 55%;
+
+    --accent: 48 100% 45%;
+    --accent-foreground: 32 13% 16%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 35 15% 91%; /* #E8E4E0 */
+    --input: 35 15% 91%;
+    --ring: 48 100% 45%;
+
+    --radius: 0.75rem;
+
+    /* Sidebar system */
+    --sidebar-background: 43 30% 98%;
+    --sidebar-foreground: 32 13% 16%;
+    --sidebar-primary: 48 100% 45%;
+    --sidebar-primary-foreground: 32 13% 16%;
+    --sidebar-accent: 35 20% 94%;
+    --sidebar-accent-foreground: 32 13% 16%;
+    --sidebar-border: 35 15% 91%;
+    --sidebar-ring: 48 100% 45%;
+  }
+
+  .dark {
+    /* Dark mode with brand consistency */
+    --background: 32 13% 8%;
+    --foreground: 43 30% 95%;
+
+    --card: 32 13% 10%;
+    --card-foreground: 43 30% 95%;
+
+    --popover: 32 13% 10%;
+    --popover-foreground: 43 30% 95%;
+
+    --primary: 48 100% 50%;
+    --primary-foreground: 32 13% 8%;
+
+    --secondary: 32 13% 15%;
+    --secondary-foreground: 43 30% 90%;
+
+    --muted: 32 13% 15%;
+    --muted-foreground: 43 30% 60%;
+
+    --accent: 48 100% 50%;
+    --accent-foreground: 32 13% 8%;
+
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 32 13% 20%;
+    --input: 32 13% 20%;
+    --ring: 48 100% 50%;
+
+    --sidebar-background: 32 13% 8%;
+    --sidebar-foreground: 43 30% 95%;
+    --sidebar-primary: 48 100% 50%;
+    --sidebar-primary-foreground: 32 13% 8%;
+    --sidebar-accent: 32 13% 15%;
+    --sidebar-accent-foreground: 43 30% 90%;
+    --sidebar-border: 32 13% 20%;
+    --sidebar-ring: 48 100% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Typography Scale */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display text-earth-900;
+  }
+
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Focus styles */
+  :focus-visible {
+    @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-background;
+  }
+}
+
+@layer components {
+  /* Brand Button Variants */
+  .btn-gold {
+    @apply bg-gold hover:bg-gold-600 text-earth-900 font-medium px-6 py-3 rounded-lg 
+           shadow-soft hover:shadow-gold transition-all duration-200 
+           focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2;
+  }
+
+  .btn-ghost-gold {
+    @apply text-gold border border-gold hover:bg-gold hover:text-earth-900 
+           font-medium px-6 py-3 rounded-lg transition-all duration-200
+           focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2;
+  }
+
+  .btn-subtle {
+    @apply bg-warm-300 hover:bg-warm-400 text-earth-800 font-medium px-6 py-3 rounded-lg 
+           transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2;
+  }
+
+  /* Card Variants */
+  .card-elegant {
+    @apply bg-card border border-border rounded-xl shadow-soft hover:shadow-medium 
+           transition-all duration-300 p-6;
+  }
+
+  .card-highlight {
+    @apply bg-gradient-to-br from-gold-50 to-warm-100 border border-gold-200 
+           rounded-xl shadow-soft p-6;
+  }
+
+  /* Input Variants */
+  .input-elegant {
+    @apply w-full px-4 py-3 rounded-lg border border-muted bg-background 
+           focus:border-gold focus:ring-2 focus:ring-gold/20 focus:outline-none 
+           transition-all duration-200 text-foreground placeholder:text-muted-foreground;
+  }
+
+  /* Layout Utilities */
+  .container-brand {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .section-padding {
+    @apply py-12 lg:py-20;
+  }
+
+  /* Animation utilities */
+  .animate-on-scroll {
+    @apply opacity-0 translate-y-8 transition-all duration-700 ease-out;
+  }
+
+  .animate-on-scroll.in-view {
+    @apply opacity-100 translate-y-0;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: theme('colors.warm.200');
+}
+
+::-webkit-scrollbar-thumb {
+  background: theme('colors.gold.400');
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: theme('colors.gold.500');
+}
+
+/* Mobile-First Responsive Design */
+@layer utilities {
+  /* Safe area for mobile devices */
+  .safe-area-pb {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  .safe-area-pt {
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  /* Mobile touch targets */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px];
+  }
+  
+  /* Mobile form inputs */
+  .input-mobile {
+    @apply h-12 text-base px-4 rounded-lg border-2 border-[#E8E4E0] 
+           bg-[#FDFCFB] text-[#2A2621] placeholder:text-[#2A2621]/60
+           focus:border-[#E6B800] focus:ring-2 focus:ring-[#E6B800]/20 
+           focus:outline-none transition-all duration-200;
+  }
+  
+  /* Mobile buttons */
+  .btn-mobile {
+    @apply h-12 px-6 text-base font-medium rounded-lg 
+           bg-[#E6B800] text-white hover:bg-[#E6B800]/90 
+           active:scale-95 transition-all duration-200 touch-target;
+  }
+  
+  .btn-mobile-secondary {
+    @apply h-12 px-6 text-base font-medium rounded-lg 
+           bg-white text-[#2A2621] border-2 border-[#E8E4E0] 
+           hover:bg-[#E8E4E0]/50 active:scale-95 
+           transition-all duration-200 touch-target;
+  }
+  
+  /* Mobile cards */
+  .card-mobile {
+    @apply bg-white rounded-xl border border-[#E8E4E0] 
+           shadow-sm p-4 transition-all duration-200;
+  }
+  
+  /* Mobile spacing */
+  .mobile-container {
+    @apply px-4 py-6;
+  }
+  
+  /* Mobile typography */
+  .text-mobile-h1 {
+    @apply text-2xl font-bold text-[#2A2621] leading-tight;
+  }
+  
+  .text-mobile-h2 {
+    @apply text-xl font-semibold text-[#2A2621] leading-tight;
+  }
+  
+  .text-mobile-body {
+    @apply text-base text-[#2A2621] leading-relaxed;
+  }
+  
+  .text-mobile-caption {
+    @apply text-sm text-[#2A2621]/70 leading-normal;
+  }
+}
+
+/* Mobile-specific media queries */
+@media (max-width: 767px) {
+  /* Hide desktop elements */
+  .desktop-only {
+    display: none !important;
+  }
+  
+  /* Optimize touch interactions */
+  * {
+    -webkit-tap-highlight-color: rgba(230, 184, 0, 0.1);
+  }
+  
+  /* Improve form inputs on mobile */
+  input, textarea, select {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+  
+  /* Better scroll behavior */
+  body {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+@media (min-width: 768px) {
+  /* Hide mobile elements */
+  .mobile-only {
+    display: none !important;
+  }
+}

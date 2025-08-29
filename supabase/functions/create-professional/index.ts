@@ -44,13 +44,6 @@ serve(async (req) => {
       throw new Error('Não é possível criar profissional para outra organização')
     }
 
-    // Verificar se o email já existe
-    const { data: existingUser } = await supabaseClient.auth.admin.getUserByEmail(email)
-    
-    if (existingUser.user) {
-      throw new Error('Este email já está cadastrado no sistema')
-    }
-
     // Criar usuário no auth.users (usando service role)
     const { data: newUser, error: authError } = await supabaseClient.auth.admin.createUser({
       email,

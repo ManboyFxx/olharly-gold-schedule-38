@@ -3,6 +3,7 @@ import React from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
+import { useUserProfile } from '@/hooks/useUserProfile';
 import { 
   Calendar, 
   Users, 
@@ -16,10 +17,22 @@ import {
 const BottomNavigation = () => {
   const location = useLocation();
   const { user } = useAuth();
+  const { profile } = useUserProfile();
 
-  const isProfessional = user && ['professional', 'organization_admin', 'super_admin'].includes(user.role || '');
+  const isProfessional = profile?.role === 'professional';
+  const isAdmin = profile?.role === 'organization_admin' || profile?.role === 'super_admin';
 
-  const navigation = [
+  // Navegação para profissionais (apenas calendário)
+  const professionalNavigation = [
+    {
+      name: 'Calendário',
+      href: '/professional-calendar',
+      icon: Calendar,
+    },
+  ];
+
+  // Navegação para administradores (itens principais)
+  const adminNavigation = [
     {
       name: 'Dashboard',
       href: '/dashboard',
@@ -30,11 +43,11 @@ const BottomNavigation = () => {
       href: '/calendar',
       icon: Calendar,
     },
-    ...(isProfessional ? [{
-      name: 'Meu Booking',
+    {
+      name: 'Meu Espaço',
       href: '/my-booking',
       icon: CalendarCheck,
-    }] : []),
+    },
     {
       name: 'Serviços',
       href: '/services',
@@ -46,6 +59,8 @@ const BottomNavigation = () => {
       icon: Users,
     },
   ];
+
+  const navigation = isProfessional ? professionalNavigation : adminNavigation;
 
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border z-50 safe-area-pb">

@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useAuth } from '@/hooks/useAuth';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Calendar, Settings, Users, Palette, User } from 'lucide-react';
+import { Calendar, Settings, Users, Palette, User, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PermissionGate } from '@/components/PermissionGate';
 
@@ -16,6 +16,7 @@ import ServiceManager from '../Services/ServiceManager';
 import { AvailabilityManager } from './AvailabilityManager';
 import { TimeOffManager } from './TimeOffManager';
 import { ProfessionalDashboard } from './ProfessionalDashboard';
+import ProfessionalBooking from './ProfessionalBooking';
 
 interface TabConfig {
   id: string;
@@ -53,6 +54,13 @@ const MySpaceManager = () => {
 
   // Tabs para dona do espaço (controle total)
   const ownerTabs: TabConfig[] = [
+    {
+      id: 'booking',
+      label: 'Novo Agendamento',
+      icon: Plus,
+      description: 'Crie agendamentos para qualquer profissional',
+      component: <ProfessionalBooking />
+    },
     {
       id: 'services',
       label: 'Serviços',
@@ -104,6 +112,13 @@ const MySpaceManager = () => {
       icon: Calendar,
       description: 'Visualize seus agendamentos',
       component: <ProfessionalDashboard />
+    },
+    {
+      id: 'booking',
+      label: 'Novo Agendamento',
+      icon: Plus,
+      description: 'Crie agendamentos para qualquer profissional',
+      component: <ProfessionalBooking />
     },
     {
       id: 'services',
@@ -170,28 +185,30 @@ const MySpaceManager = () => {
       </div>
 
       {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className={cn(
+        isMobile ? "space-y-4" : "space-y-6"
+      )}>
         <TabsList className={cn(
           "grid w-full",
-          isMobile ? `grid-cols-${Math.min(tabs.length, 2)} h-auto` : `grid-cols-${tabs.length}`,
-          !isMobile && "h-12"
+          tabs.length === 4 ? "grid-cols-4" : tabs.length === 5 ? "grid-cols-5" : "grid-cols-3",
+          isMobile ? "h-16" : "h-10"
         )}>
           {tabs.map((tab) => (
             <TabsTrigger 
               key={tab.id} 
               value={tab.id}
               className={cn(
-                "flex items-center gap-2",
-                isMobile && "flex-col py-3 px-2 h-auto"
+                "flex items-center justify-center gap-1.5",
+                isMobile ? "text-xs px-1 py-2 flex-col" : "text-sm px-3 py-2"
               )}
             >
               <tab.icon className={cn(
-                isMobile ? "w-4 h-4" : "w-5 h-5"
+                isMobile ? "w-4 h-4" : "w-4 h-4"
               )} />
               <span className={cn(
-                isMobile ? "text-xs" : "text-sm"
+                isMobile && "text-[10px] leading-tight text-center"
               )}>
-                {tab.label}
+                {isMobile ? tab.label.split(' ')[0] : tab.label}
               </span>
             </TabsTrigger>
           ))}

@@ -4,17 +4,20 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Edit2, Save, X, UserPlus } from 'lucide-react';
 import { useProfiles } from '@/hooks/useProfiles';
 import { useOrganization } from '@/hooks/useOrganization';
+import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 
 interface ProfessionalProfile {
   id: string;
   full_name: string;
+  display_name?: string;
   email: string;
   title?: string;
   phone?: string;
@@ -33,6 +36,7 @@ interface AddProfessionalForm {
 const ProfessionalManager = () => {
   const { professionals, updateProfessionalProfile, refetch } = useProfiles();
   const { organization } = useOrganization();
+  const { user } = useAuth();
   const [editingProfile, setEditingProfile] = useState<string | null>(null);
   const [formData, setFormData] = useState<Partial<ProfessionalProfile>>({});
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -44,6 +48,12 @@ const ProfessionalManager = () => {
     role: 'professional'
   });
   const [isAdding, setIsAdding] = useState(false);
+
+  // Função para verificar se um profissional pode ser editado
+  const canEditProfessional = (professional: ProfessionalProfile) => {
+    // O Admin (organization_admin) não pode ser editado
+    return professional.role !== 'organization_admin';
+  };
 
   const handleEdit = (professional: ProfessionalProfile) => {
     setEditingProfile(professional.id);
@@ -65,6 +75,34 @@ const ProfessionalManager = () => {
   const handleCancel = () => {
     setEditingProfile(null);
     setFormData({});
+  };
+
+  const handleToggleBooking = async (professionalId: string, currentStatus: boolean) => {
+    try {
+      const { error } = await supabase
+        .from('users')
+        .update({ 
+          accept_online_booking: !currentStatus,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', professionalId);
+
+      if (error) throw error;
+
+      await refetch();
+      
+      toast({
+        title: 'Status atualizado!',
+        description: `Agendamento online ${!currentStatus ? 'ativado' : 'desativado'} com sucesso.`,
+      });
+    } catch (error: any) {
+      console.error('Error toggling booking status:', error);
+      toast({
+        title: 'Erro ao atualizar status',
+        description: 'Ocorreu um erro ao alterar o status do agendamento.',
+        variant: 'destructive',
+      });
+    }
   };
 
   const handleAddProfessional = async (formData: AddProfessionalForm) => {
@@ -146,8 +184,15 @@ const ProfessionalManager = () => {
                 <div>
                   <CardTitle className="flex items-center gap-2">
                     {professional.full_name}
-                    {professional.accept_online_booking && (
+                    {professional.role === 'organization_admin' && (
+                      <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                        Admin
+                      </Badge>
+                    )}
+                    {professional.accept_online_booking ? (
                       <Badge variant="default">Agendamento Ativo</Badge>
+                    ) : (
+                      <Badge variant="secondary">Agendamento Inativo</Badge>
                     )}
                   </CardTitle>
                   <CardDescription className="flex flex-col gap-1">
@@ -158,33 +203,47 @@ const ProfessionalManager = () => {
                     )}
                   </CardDescription>
                 </div>
-                <div className="flex gap-2">
-                  {editingProfile === professional.id ? (
-                    <>
-                      <Button
-                        size="sm"
-                        onClick={() => handleSave(professional.id)}
-                      >
-                        <Save className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={handleCancel}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </>
-                  ) : (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleEdit(professional)}
-                    >
-                      <Edit2 className="h-4 w-4 mr-1" />
-                      Editar
-                    </Button>
-                  )}
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor={`booking-${professional.id}`} className="text-sm font-medium">
+                      Agendamento
+                    </Label>
+                    <Switch
+                      id={`booking-${professional.id}`}
+                      checked={professional.accept_online_booking}
+                      onCheckedChange={() => handleToggleBooking(professional.id, professional.accept_online_booking)}
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    {editingProfile === professional.id ? (
+                      <>
+                        <Button
+                          size="sm"
+                          onClick={() => handleSave(professional.id)}
+                        >
+                          <Save className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={handleCancel}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </>
+                    ) : (
+                      canEditProfessional(professional) && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleEdit(professional)}
+                        >
+                          <Edit2 className="h-4 w-4 mr-1" />
+                          Editar
+                        </Button>
+                      )
+                    )}
+                  </div>
                 </div>
               </div>
             </CardHeader>
@@ -209,6 +268,16 @@ const ProfessionalManager = () => {
                       value={formData.phone || ''}
                       onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
                       placeholder="(00) 00000-0000"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor={`display-name-${professional.id}`}>Nome de Exibição</Label>
+                    <Input
+                      id={`display-name-${professional.id}`}
+                      value={formData.display_name || ''}
+                      onChange={(e) => setFormData(prev => ({ ...prev, display_name: e.target.value }))}
+                      placeholder="Nome que aparecerá na lista de profissionais"
                     />
                   </div>
                 </div>

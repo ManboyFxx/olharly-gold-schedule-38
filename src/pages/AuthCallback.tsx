@@ -34,7 +34,7 @@ const AuthCallback = () => {
               title: 'Login realizado com sucesso!',
               description: `Bem-vindo de volta, ${userData.full_name}`,
             });
-            navigate('/my-booking');
+            navigate('/professional-calendar');
           } else {
             toast({
               title: 'Login realizado com sucesso!',

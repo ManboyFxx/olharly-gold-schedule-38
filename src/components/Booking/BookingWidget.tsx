@@ -139,23 +139,24 @@ export const BookingWidget = ({ organization, selectedProfessional, services = [
         <div className="flex-1 overflow-y-auto pb-20">
           <div className="p-4">
             {currentStep === 1 && (
-              <ServiceSelection
+              <ProfessionalSelection
                 organizationId={organization.id}
-                selectedProfessionalId={selectedProfessional?.id}
-                services={services}
-                onSelect={(serviceId) => {
-                  updateBookingData({ serviceId });
+                serviceId="" // Permitir seleção sem serviço específico
+                onSelect={(professionalId) => {
+                  updateBookingData({ professionalId });
                   nextStep();
                 }}
+                onBack={() => {}} // Primeiro passo, não tem volta
               />
             )}
             
-            {currentStep === 2 && !selectedProfessional && (
-              <ProfessionalSelection
+            {currentStep === 2 && (
+              <ServiceSelection
                 organizationId={organization.id}
-                serviceId={bookingData.serviceId!}
-                onSelect={(professionalId) => {
-                  updateBookingData({ professionalId });
+                selectedProfessionalId={bookingData.professionalId}
+                services={services}
+                onSelect={(serviceId) => {
+                  updateBookingData({ serviceId });
                   nextStep();
                 }}
                 onBack={prevStep}
@@ -238,23 +239,24 @@ export const BookingWidget = ({ organization, selectedProfessional, services = [
         <div className="w-full max-w-sm sm:max-w-md">
           <div className="bg-white rounded-2xl shadow-lg border border-[#E8E4E0]/50 p-6 sm:p-8">
             {currentStep === 1 && (
-              <ServiceSelection
+              <ProfessionalSelection
                 organizationId={organization.id}
-                selectedProfessionalId={selectedProfessional?.id}
-                services={services}
-                onSelect={(serviceId) => {
-                  updateBookingData({ serviceId });
+                serviceId="" // Permitir seleção sem serviço específico
+                onSelect={(professionalId) => {
+                  updateBookingData({ professionalId });
                   nextStep();
                 }}
+                onBack={() => {}} // Primeiro passo, não tem volta
               />
             )}
             
-            {currentStep === 2 && !selectedProfessional && (
-              <ProfessionalSelection
+            {currentStep === 2 && (
+              <ServiceSelection
                 organizationId={organization.id}
-                serviceId={bookingData.serviceId!}
-                onSelect={(professionalId) => {
-                  updateBookingData({ professionalId });
+                selectedProfessionalId={bookingData.professionalId}
+                services={services}
+                onSelect={(serviceId) => {
+                  updateBookingData({ serviceId });
                   nextStep();
                 }}
                 onBack={prevStep}

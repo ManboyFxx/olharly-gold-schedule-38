@@ -23,6 +23,7 @@ import Plans from "./pages/Plans";
 import Reports from "./pages/Reports";
 import MyBooking from "./pages/MyBooking";
 import PublicBooking from "./pages/PublicBooking";
+import ProfessionalCalendar from "./pages/ProfessionalCalendar";
 import SlugHandler from "./pages/SlugHandler";
 import NotFound from "./pages/NotFound";
 
@@ -32,39 +33,38 @@ function App() {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
           <BrowserRouter>
             <AuthProvider>
               <OrganizationProvider>
                 <SubscriptionProvider>
-                <OfflineIndicator />
+                  {/* <OfflineIndicator /> */}
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/auth" element={<Auth />} />
                   <Route path="/auth-callback" element={<AuthCallback />} />
                   <Route path="/booking" element={<PublicBooking />} />
                   <Route path="/dashboard" element={
-                    <ProtectedRoute>
+                    <ProtectedRoute allowedRoles={['organization_admin']}>
                       <Dashboard />
                     </ProtectedRoute>
                   } />
                   <Route path="/calendar" element={
-                    <ProtectedRoute>
+                    <ProtectedRoute allowedRoles={['organization_admin']}>
                       <Calendar />
                     </ProtectedRoute>
                   } />
                   <Route path="/services" element={
-                    <ProtectedRoute>
+                    <ProtectedRoute allowedRoles={['organization_admin']}>
                       <Services />
                     </ProtectedRoute>
                   } />
                   <Route path="/clients" element={
-                    <ProtectedRoute>
+                    <ProtectedRoute allowedRoles={['organization_admin']}>
                       <Clients />
                     </ProtectedRoute>
                   } />
                   <Route path="/settings" element={
-                    <ProtectedRoute>
+                    <ProtectedRoute allowedRoles={['organization_admin']}>
                       <Settings />
                     </ProtectedRoute>
                   } />
@@ -73,13 +73,18 @@ function App() {
                       <MyBooking />
                     </ProtectedRoute>
                   } />
+                  <Route path="/professional-calendar" element={
+                    <ProtectedRoute allowedRoles={['professional']}>
+                      <ProfessionalCalendar />
+                    </ProtectedRoute>
+                  } />
                   <Route path="/plans" element={
-                    <ProtectedRoute>
+                    <ProtectedRoute allowedRoles={['organization_admin']}>
                       <Plans />
                     </ProtectedRoute>
                   } />
                   <Route path="/reports" element={
-                    <ProtectedRoute>
+                    <ProtectedRoute allowedRoles={['organization_admin']}>
                       <Reports />
                     </ProtectedRoute>
                   } />
@@ -87,16 +92,15 @@ function App() {
                   <Route path="/:slug" element={<SlugHandler />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
-                <PWAInstallPrompt />
-                <Toaster />
-                <Sonner />
-              </SubscriptionProvider>
-            </OrganizationProvider>
-          </AuthProvider>
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
-    </ErrorBoundary>
+                {/* <PWAInstallPrompt /> */}
+                  {/* <Toaster /> */}
+                  {/* <Sonner /> */}
+                </SubscriptionProvider>
+              </OrganizationProvider>
+            </AuthProvider>
+          </BrowserRouter>
+        </QueryClientProvider>
+      </ErrorBoundary>
   );
 }
 

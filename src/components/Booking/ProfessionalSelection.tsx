@@ -8,6 +8,7 @@ import { ArrowLeft, ArrowRight, User } from 'lucide-react';
 interface Professional {
   id: string;
   full_name: string;
+  display_name?: string;
   title?: string;
   avatar_url?: string;
   bio?: string;
@@ -32,27 +33,23 @@ export const ProfessionalSelection = ({
 
   useEffect(() => {
     const fetchProfessionals = async () => {
-
       const { data, error } = await supabase
         .from('users')
-        .select('id, full_name, title, avatar_url, bio')
+        .select('id, full_name, display_name, title, avatar_url, bio')
         .eq('organization_id', organizationId)
-        .eq('role', 'professional')
-        .eq('is_active', true);
+        .in('role', ['professional', 'organization_admin'])
+        .eq('is_active', true)
+        .eq('accept_online_booking', true);
 
       if (data && !error) {
         setProfessionals(data);
-        // Auto-select if only one professional
-        if (data.length === 1) {
-          onSelect(data[0].id);
-          return;
-        }
+        // Não auto-selecionar mais, sempre mostrar opções
       }
       setLoading(false);
     };
 
     fetchProfessionals();
-  }, [organizationId, onSelect]);
+  }, [organizationId]);
 
   if (loading) {
     return (
@@ -102,7 +99,7 @@ export const ProfessionalSelection = ({
               </div>
               <div className="flex-1">
                 <h3 className="font-medium text-[#2A2621] mb-1">
-                  {professional.full_name}
+                  {professional.display_name || professional.full_name}
                 </h3>
                 {professional.title && (
                   <p className="text-sm text-[#2A2621]/70 mb-1">

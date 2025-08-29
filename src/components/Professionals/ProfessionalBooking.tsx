@@ -133,32 +133,70 @@ const ProfessionalBooking = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold text-foreground">Novo Agendamento</h2>
-          <p className="text-muted-foreground">
+    <div className={cn(
+      isMobile ? "space-y-4" : "space-y-6"
+    )}>
+      <div className={cn(
+        "flex items-center justify-between",
+        isMobile && "flex-col items-start space-y-2"
+      )}>
+        <div className={cn(
+          isMobile && "w-full"
+        )}>
+          <h2 className={cn(
+            "font-bold text-foreground",
+            isMobile ? "text-xl" : "text-2xl"
+          )}>Novo Agendamento</h2>
+          <p className={cn(
+            "text-muted-foreground",
+            isMobile ? "text-sm" : "text-base"
+          )}>
             Crie agendamentos para qualquer profissional da organização
           </p>
         </div>
       </div>
 
-      <Card className="card-elegant">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Plus className="w-5 h-5 text-primary" />
+      <Card className={cn(
+        "card-elegant",
+        isMobile && "mx-0"
+      )}>
+        <CardHeader className={cn(
+          isMobile ? "p-4 pb-3" : "p-6"
+        )}>
+          <CardTitle className={cn(
+            "flex items-center gap-2",
+            isMobile ? "text-lg" : "text-xl"
+          )}>
+            <Plus className={cn(
+              "text-primary",
+              isMobile ? "w-4 h-4" : "w-5 h-5"
+            )} />
             Dados do Agendamento
           </CardTitle>
-          <CardDescription>
+          <CardDescription className={cn(
+            isMobile ? "text-sm" : "text-base"
+          )}>
             Preencha as informações do cliente e selecione o profissional
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
+        <CardContent className={cn(
+          isMobile ? "p-4 pt-0" : "p-6 pt-0"
+        )}>
+          <form onSubmit={handleSubmit} className={cn(
+            isMobile ? "space-y-4" : "space-y-6"
+          )}>
             {/* Dados do Cliente */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-medium text-foreground flex items-center">
-                <User className="w-5 h-5 mr-2 text-primary" />
+            <div className={cn(
+              isMobile ? "space-y-3" : "space-y-4"
+            )}>
+              <h3 className={cn(
+                "font-medium text-foreground flex items-center",
+                isMobile ? "text-base" : "text-lg"
+              )}>
+                <User className={cn(
+                  "mr-2 text-primary",
+                  isMobile ? "w-4 h-4" : "w-5 h-5"
+                )} />
                 Dados do Cliente
               </h3>
               
@@ -216,9 +254,17 @@ const ProfessionalBooking = () => {
             </div>
 
             {/* Seleção de Profissional e Serviço */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-medium text-foreground flex items-center">
-                <Clock className="w-5 h-5 mr-2 text-primary" />
+            <div className={cn(
+              isMobile ? "space-y-3" : "space-y-4"
+            )}>
+              <h3 className={cn(
+                "font-medium text-foreground flex items-center",
+                isMobile ? "text-base" : "text-lg"
+              )}>
+                <Clock className={cn(
+                  "mr-2 text-primary",
+                  isMobile ? "w-4 h-4" : "w-5 h-5"
+                )} />
                 Profissional e Serviço
               </h3>
               
@@ -330,24 +376,42 @@ const ProfessionalBooking = () => {
 
               {/* Informações do Serviço Selecionado */}
               {selectedService && (
-                <div className="p-4 bg-muted/50 rounded-lg border">
-                  <div className="flex items-center space-x-2 mb-2">
+                <div className={cn(
+                  "bg-muted/50 rounded-lg border",
+                  isMobile ? "p-3" : "p-4"
+                )}>
+                  <div className={cn(
+                    "flex items-center space-x-2",
+                    isMobile ? "mb-1" : "mb-2"
+                  )}>
                     <div 
                       className="w-3 h-3 rounded-full"
                       style={{ backgroundColor: selectedService.color }}
                     />
-                    <span className="font-medium">{selectedService.name}</span>
+                    <span className={cn(
+                      "font-medium",
+                      isMobile ? "text-sm" : "text-base"
+                    )}>{selectedService.name}</span>
                   </div>
-                  <p className="text-sm text-muted-foreground">
+                  <p className={cn(
+                    "text-muted-foreground",
+                    isMobile ? "text-xs" : "text-sm"
+                  )}>
                     Duração: {selectedService.duration_minutes} minutos
                   </p>
                   {selectedService.price_cents > 0 && (
-                    <p className="text-sm text-muted-foreground">
+                    <p className={cn(
+                      "text-muted-foreground",
+                      isMobile ? "text-xs" : "text-sm"
+                    )}>
                       Valor: R$ {(selectedService.price_cents / 100).toFixed(2)}
                     </p>
                   )}
                   {selectedService.description && (
-                    <p className="text-sm text-muted-foreground mt-1">
+                    <p className={cn(
+                      "text-muted-foreground mt-1",
+                      isMobile ? "text-xs" : "text-sm"
+                    )}>
                       {selectedService.description}
                     </p>
                   )}
@@ -356,8 +420,13 @@ const ProfessionalBooking = () => {
             </div>
 
             {/* Observações */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-medium text-foreground">Observações</h3>
+            <div className={cn(
+              isMobile ? "space-y-3" : "space-y-4"
+            )}>
+              <h3 className={cn(
+                "font-medium text-foreground",
+                isMobile ? "text-base" : "text-lg"
+              )}>Observações</h3>
               
               <div className="space-y-2">
                 <Label htmlFor="notes" className={cn(

@@ -5,10 +5,13 @@ import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { useOrganization } from '@/hooks/useOrganization';
 import { generateBookingUrl } from '@/lib/domain';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { cn } from '@/lib/utils';
 
 const QuickActions = () => {
   const navigate = useNavigate();
   const { organization } = useOrganization();
+  const isMobile = useIsMobile();
 
   const handleShareLink = () => {
     if (organization?.slug) {
@@ -19,8 +22,14 @@ const QuickActions = () => {
 
   return (
     <div className="card-elegant">
-      <h3 className="text-lg font-semibold text-foreground mb-4">Ações Rápidas</h3>
-      <div className="grid grid-cols-2 gap-3">
+      <h3 className={cn(
+        "font-semibold text-foreground mb-4",
+        isMobile ? "text-base" : "text-lg"
+      )}>Ações Rápidas</h3>
+      <div className={cn(
+        "grid gap-3",
+        isMobile ? "grid-cols-1" : "grid-cols-2"
+      )}>
         <Button 
           className="btn-gold justify-start h-auto py-4 px-4"
           onClick={() => navigate('/calendar')}

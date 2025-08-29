@@ -18,8 +18,14 @@ const MyBooking = () => {
   if (loading) {
     return (
       <DashboardLayout>
-        <div className="flex items-center justify-center h-64">
-          <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+        <div className={cn(
+          "flex items-center justify-center",
+          isMobile ? "h-48" : "h-64"
+        )}>
+          <div className={cn(
+            "border-2 border-primary border-t-transparent rounded-full animate-spin",
+            isMobile ? "w-5 h-5" : "w-6 h-6"
+          )}></div>
         </div>
       </DashboardLayout>
     );
@@ -28,8 +34,8 @@ const MyBooking = () => {
   return (
     <DashboardLayout>
       <div className={cn(
-        "animate-fade-in",
-        isMobile ? "space-y-4" : "space-y-8"
+        "animate-fade-in min-h-screen",
+        isMobile ? "space-y-3 pb-6" : "space-y-8 pb-8"
       )}>
         <MySpaceManager />
       </div>

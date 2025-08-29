@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import DashboardLayout from '@/components/Dashboard/DashboardLayout';
+import AppLayout from '@/components/Layout/AppLayout';
 import ClientsList from '@/components/Clients/ClientsList';
 import ClientForm from '@/components/Clients/ClientForm';
 import ClientProfile from '@/components/Clients/ClientProfile';
@@ -35,10 +35,10 @@ const Clients = () => {
   };
 
   return (
-    <DashboardLayout>
+    <AppLayout>
       <div className={cn(
         "space-y-6",
-        isMobile && "space-y-4 px-4"
+        isMobile && "space-y-4"
       )}>
         <div className={cn(
           "flex items-center justify-between",
@@ -94,7 +94,7 @@ const Clients = () => {
           />
         )}
       </div>
-    </DashboardLayout>
+    </AppLayout>
   );
 };
 

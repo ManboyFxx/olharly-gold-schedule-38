@@ -3,7 +3,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useOrganization } from '@/hooks/useOrganization';
-import DashboardLayout from '@/components/Dashboard/DashboardLayout';
+import AppLayout from '@/components/Layout/AppLayout';
 import StatsCard from '@/components/Dashboard/StatsCard';
 import QuickActions from '@/components/Dashboard/QuickActions';
 import RecentBookings from '@/components/Dashboard/RecentBookings';
@@ -19,10 +19,10 @@ const Dashboard = () => {
   const isMobile = useIsMobile();
 
   return (
-    <DashboardLayout>
+    <AppLayout>
       <div className={cn(
         "animate-fade-in",
-        isMobile ? "space-y-6 px-4" : "space-y-8"
+        isMobile ? "space-y-6" : "space-y-8"
       )}>
         {/* Welcome Section */}
         <div>
@@ -81,7 +81,7 @@ const Dashboard = () => {
         {/* Recent Bookings - Full Width */}
         <RecentBookings />
       </div>
-    </DashboardLayout>
+    </AppLayout>
   );
 };
 

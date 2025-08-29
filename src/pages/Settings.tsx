@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import DashboardLayout from '@/components/Dashboard/DashboardLayout';
+import AppLayout from '@/components/Layout/AppLayout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import ThemeEditor from '@/components/ThemeEditor/ThemeEditor';
@@ -21,11 +21,11 @@ const Settings = () => {
 
   if (!user || !organization) {
     return (
-      <DashboardLayout>
+      <AppLayout>
         <div className="flex items-center justify-center h-64">
           <p className="text-muted-foreground">Carregando configurações...</p>
         </div>
-      </DashboardLayout>
+      </AppLayout>
     );
   }
 
@@ -39,10 +39,10 @@ const Settings = () => {
   };
 
   return (
-    <DashboardLayout>
+    <AppLayout>
       <div className={cn(
         "animate-fade-in",
-        isMobile ? "space-y-4 px-4" : "space-y-8"
+        isMobile ? "space-y-4" : "space-y-8"
       )}>
         {/* Header */}
         <div>
@@ -160,7 +160,7 @@ const Settings = () => {
           )}
         </Tabs>
       </div>
-    </DashboardLayout>
+    </AppLayout>
   );
 };
 

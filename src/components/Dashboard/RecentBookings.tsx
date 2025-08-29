@@ -5,6 +5,8 @@ import { Badge } from '@/components/ui/badge';
 import { useAppointments } from '@/hooks/useAppointments';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { cn } from '@/lib/utils';
 
 const statusConfig = {
   scheduled: { label: 'Agendado', color: 'bg-blue-100 text-blue-800', icon: AlertCircle },
@@ -17,6 +19,7 @@ const statusConfig = {
 
 const RecentBookings = () => {
   const { appointments, loading } = useAppointments();
+  const isMobile = useIsMobile();
 
   // Get upcoming appointments (next 5)
   const upcomingAppointments = appointments
@@ -35,8 +38,14 @@ const RecentBookings = () => {
   }
   return (
     <div className="card-elegant">
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold text-foreground">Próximos Agendamentos</h3>
+      <div className={cn(
+        "flex items-center justify-between mb-6",
+        isMobile && "flex-col items-start space-y-2"
+      )}>
+        <h3 className={cn(
+          "font-semibold text-foreground",
+          isMobile ? "text-base" : "text-lg"
+        )}>Próximos Agendamentos</h3>
         <Badge variant="secondary" className="text-xs">
           {upcomingAppointments.length} agendamentos
         </Badge>
@@ -58,7 +67,10 @@ const RecentBookings = () => {
             const appointmentDate = new Date(appointment.scheduled_at);
             
             return (
-              <div key={appointment.id} className="flex items-center justify-between p-3 rounded-lg bg-warm-100 hover:bg-warm-200 transition-colors">
+              <div key={appointment.id} className={cn(
+                "p-3 rounded-lg bg-warm-100 hover:bg-warm-200 transition-colors",
+                isMobile ? "flex flex-col space-y-3" : "flex items-center justify-between"
+              )}>
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 bg-gold-100 rounded-full flex items-center justify-center">
                     <User className="w-5 h-5 text-gold-600" />
@@ -71,8 +83,13 @@ const RecentBookings = () => {
                   </div>
                 </div>
                 
-                <div className="flex items-center space-x-3">
-                  <div className="text-right">
+                <div className={cn(
+                  "flex items-center space-x-3",
+                  isMobile && "justify-between"
+                )}>
+                  <div className={cn(
+                    isMobile ? "text-left" : "text-right"
+                  )}>
                     <div className="flex items-center text-sm font-medium text-foreground">
                       <Clock className="w-4 h-4 mr-1" />
                       {appointmentDate.toLocaleTimeString('pt-BR', { 

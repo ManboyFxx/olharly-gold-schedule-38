@@ -5,9 +5,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useAuth } from '@/hooks/useAuth';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Calendar, Settings, Users, Palette, User, Plus } from 'lucide-react';
+import { Calendar, Settings, Users, Palette, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PermissionGate } from '@/components/PermissionGate';
+import ResponsiveHeader from '@/components/Layout/ResponsiveHeader';
 
 // Import components for each tab
 import ProfessionalManager from './ProfessionalManager';
@@ -16,7 +17,6 @@ import ServiceManager from '../Services/ServiceManager';
 import { AvailabilityManager } from './AvailabilityManager';
 import { TimeOffManager } from './TimeOffManager';
 import { ProfessionalDashboard } from './ProfessionalDashboard';
-import ProfessionalBooking from './ProfessionalBooking';
 
 interface TabConfig {
   id: string;
@@ -55,11 +55,11 @@ const MySpaceManager = () => {
   // Tabs para dona do espaço (controle total)
   const ownerTabs: TabConfig[] = [
     {
-      id: 'booking',
-      label: 'Novo Agendamento',
-      icon: Plus,
-      description: 'Crie agendamentos para qualquer profissional',
-      component: <ProfessionalBooking />
+      id: 'dashboard',
+      label: 'Dashboard',
+      icon: Calendar,
+      description: 'Visão geral dos agendamentos',
+      component: <ProfessionalDashboard />
     },
     {
       id: 'services',
@@ -114,13 +114,6 @@ const MySpaceManager = () => {
       component: <ProfessionalDashboard />
     },
     {
-      id: 'booking',
-      label: 'Novo Agendamento',
-      icon: Plus,
-      description: 'Crie agendamentos para qualquer profissional',
-      component: <ProfessionalBooking />
-    },
-    {
       id: 'services',
       label: 'Meus Serviços',
       icon: User,
@@ -148,33 +141,46 @@ const MySpaceManager = () => {
     : 'Visualize seus agendamentos e gerencie seu perfil profissional';
 
   return (
-    <div className={cn(
-      "space-y-6",
-      isMobile && "px-4"
-    )}>
+    <>
+      <ResponsiveHeader />
+      <div className={cn(
+        "space-y-6",
+        isMobile && "px-4"
+      )}>
       {/* Header */}
-      <div>
+      <div className={cn(
+        "space-y-3",
+        isMobile ? "px-1" : "px-0"
+      )}>
         <h1 className={cn(
-          "font-bold text-foreground mb-2 flex items-center",
-          isMobile ? "text-2xl" : "text-display-md"
+          "font-bold text-foreground flex items-center",
+          isMobile ? "text-xl mb-1" : "text-display-md mb-2"
         )}>
           <Calendar className={cn(
-            "mr-3 text-primary",
-            isMobile ? "w-6 h-6" : "w-8 h-8"
+            "text-primary flex-shrink-0",
+            isMobile ? "w-5 h-5 mr-2" : "w-8 h-8 mr-3"
           )} />
-          {headerTitle}
+          <span className={cn(
+            isMobile && "truncate"
+          )}>
+            {headerTitle}
+          </span>
         </h1>
         <p className={cn(
-          "text-muted-foreground",
-          isMobile ? "text-base" : "text-lg"
+          "text-muted-foreground leading-relaxed",
+          isMobile ? "text-sm" : "text-lg"
         )}>
           {headerDescription}
         </p>
         
         {/* Indicador de Role */}
-        <div className="mt-2">
+        <div className={cn(
+          "flex items-center",
+          isMobile ? "justify-start" : "justify-start"
+        )}>
           <span className={cn(
-            "inline-flex items-center px-2 py-1 rounded-full text-xs font-medium",
+            "inline-flex items-center rounded-full font-medium",
+            isMobile ? "px-2 py-1 text-xs" : "px-3 py-1.5 text-sm",
             isOwner 
               ? "bg-gold-100 text-gold-800" 
               : "bg-blue-100 text-blue-800"
@@ -186,27 +192,32 @@ const MySpaceManager = () => {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className={cn(
-        isMobile ? "space-y-4" : "space-y-6"
+        isMobile ? "space-y-3" : "space-y-6"
       )}>
         <TabsList className={cn(
-          "grid w-full",
+          "grid w-full bg-muted/50",
           tabs.length === 4 ? "grid-cols-4" : tabs.length === 5 ? "grid-cols-5" : "grid-cols-3",
-          isMobile ? "h-16" : "h-10"
+          isMobile ? "h-auto p-1 gap-1" : "h-10 p-1"
         )}>
           {tabs.map((tab) => (
             <TabsTrigger 
               key={tab.id} 
               value={tab.id}
               className={cn(
-                "flex items-center justify-center gap-1.5",
-                isMobile ? "text-xs px-1 py-2 flex-col" : "text-sm px-3 py-2"
+                "flex items-center justify-center transition-all duration-200",
+                isMobile 
+                  ? "text-xs px-1 py-2 flex-col gap-1 min-h-[3rem] rounded-md" 
+                  : "text-sm px-3 py-2 gap-1.5 rounded-md",
+                "data-[state=active]:bg-background data-[state=active]:shadow-sm"
               )}
             >
               <tab.icon className={cn(
+                "flex-shrink-0",
                 isMobile ? "w-4 h-4" : "w-4 h-4"
               )} />
               <span className={cn(
-                isMobile && "text-[10px] leading-tight text-center"
+                "font-medium",
+                isMobile ? "text-[10px] leading-tight text-center max-w-full" : "text-sm"
               )}>
                 {isMobile ? tab.label.split(' ')[0] : tab.label}
               </span>
@@ -215,8 +226,12 @@ const MySpaceManager = () => {
         </TabsList>
 
         {tabs.map((tab) => (
-          <TabsContent key={tab.id} value={tab.id} className="mt-6">
-            <div className="space-y-4">
+          <TabsContent key={tab.id} value={tab.id} className={cn(
+            isMobile ? "mt-3" : "mt-6"
+          )}>
+            <div className={cn(
+              isMobile ? "space-y-3" : "space-y-4"
+            )}>
               {!isMobile && (
                 <div className="mb-6">
                   <h2 className="text-xl font-semibold">{tab.label}</h2>
@@ -225,12 +240,25 @@ const MySpaceManager = () => {
                   )}
                 </div>
               )}
-              {tab.component}
+              {isMobile && (
+                <div className="mb-4 px-1">
+                  <h2 className="text-lg font-semibold text-foreground">{tab.label}</h2>
+                  {tab.description && (
+                    <p className="text-sm text-muted-foreground mt-1">{tab.description}</p>
+                  )}
+                </div>
+              )}
+              <div className={cn(
+                isMobile && "px-1"
+              )}>
+                {tab.component}
+              </div>
             </div>
           </TabsContent>
         ))}
       </Tabs>
     </div>
+    </>
   );
 };
 

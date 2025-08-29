@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import DashboardLayout from '@/components/Dashboard/DashboardLayout';
+import AppLayout from '@/components/Layout/AppLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -226,17 +226,45 @@ const Reports = () => {
 
   const UpgradePrompt = ({ title }: { title: string }) => (
     <Card className="border-dashed border-2 border-gold/30">
-      <CardContent className="flex flex-col items-center justify-center py-8 text-center">
-        <div className="w-16 h-16 bg-gold/10 rounded-full flex items-center justify-center mb-4">
-          {currentPlan === 'conhecendo' ? <Crown className="w-8 h-8 text-gold" /> : <Lock className="w-8 h-8 text-muted-foreground" />}
+      <CardContent className={cn(
+        "flex flex-col items-center justify-center text-center",
+        isMobile ? "py-6 px-4" : "py-8"
+      )}>
+        <div className={cn(
+          "bg-gold/10 rounded-full flex items-center justify-center mb-4",
+          isMobile ? "w-12 h-12" : "w-16 h-16"
+        )}>
+          {currentPlan === 'conhecendo' ? (
+            <Crown className={cn(
+              "text-gold",
+              isMobile ? "w-6 h-6" : "w-8 h-8"
+            )} />
+          ) : (
+            <Lock className={cn(
+              "text-muted-foreground",
+              isMobile ? "w-6 h-6" : "w-8 h-8"
+            )} />
+          )}
         </div>
-        <h3 className="text-lg font-semibold mb-2">{title}</h3>
-        <p className="text-muted-foreground text-sm mb-4">
+        <h3 className={cn(
+          "font-semibold mb-2",
+          isMobile ? "text-base" : "text-lg"
+        )}>{title}</h3>
+        <p className={cn(
+          "text-muted-foreground mb-4",
+          isMobile ? "text-xs" : "text-sm"
+        )}>
           {currentPlan === 'conhecendo' 
             ? 'Este recurso estará disponível quando você assinar um plano.' 
             : 'Faça upgrade para o plano Posicionado(a) para acessar este recurso.'}
         </p>
-        <Button variant="outline" className="border-gold text-gold hover:bg-gold hover:text-white">
+        <Button 
+          variant="outline" 
+          className={cn(
+            "border-gold text-gold hover:bg-gold hover:text-white",
+            isMobile && "text-sm px-4 py-2"
+          )}
+        >
           Ver Planos
         </Button>
       </CardContent>
@@ -244,10 +272,13 @@ const Reports = () => {
   );
 
   return (
-    <DashboardLayout>
-      <div className={cn("space-y-6", isMobile && "px-4")}>
+    <AppLayout>
+      <div className={cn("space-y-6", isMobile && "")}>
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className={cn(
+          "flex items-center justify-between",
+          isMobile && "flex-col items-start gap-4"
+        )}>
           <div>
             <h1 className={cn(
               "font-bold text-foreground",
@@ -255,7 +286,10 @@ const Reports = () => {
             )}>
               Relatórios
             </h1>
-            <div className="flex items-center gap-2 mt-2">
+            <div className={cn(
+              "flex items-center gap-2 mt-2",
+              isMobile && "flex-wrap"
+            )}>
               <Badge variant={currentPlan === 'posicionado' ? 'default' : 'secondary'}>
                 Plano {currentPlan === 'conhecendo' ? 'Trial' : 
                        currentPlan === 'comecei_agora' ? 'Comecei Agora' : 'Posicionado(a)'}
@@ -268,9 +302,15 @@ const Reports = () => {
             </div>
           </div>
           
-          <div className="flex items-center gap-3">
+          <div className={cn(
+            "flex items-center gap-3",
+            isMobile && "w-full flex-col gap-2"
+          )}>
             <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
-              <SelectTrigger className="w-32">
+              <SelectTrigger className={cn(
+                "w-32",
+                isMobile && "w-full"
+              )}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -281,23 +321,34 @@ const Reports = () => {
             </Select>
             
             {canExportData && (
-              <Button variant="outline" onClick={exportData}>
-                <Download className="w-4 h-4 mr-2" />
-                Exportar
+              <Button variant="outline" onClick={exportData} className={cn(
+                isMobile && "w-full"
+              )}>
+                <Download className={cn(
+                  "w-4 h-4 mr-2",
+                  isMobile && "w-5 h-5"
+                )} />
+                {isMobile ? "Exportar Dados" : "Exportar"}
               </Button>
             )}
           </div>
         </div>
 
         {loading ? (
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className={cn(
+            "grid gap-6",
+            isMobile ? "grid-cols-1" : "md:grid-cols-2"
+          )}>
             {[...Array(4)].map((_, i) => (
               <Card key={i}>
                 <CardHeader className="animate-pulse">
                   <div className="h-4 bg-muted rounded w-1/3"></div>
                 </CardHeader>
                 <CardContent>
-                  <div className="h-64 bg-muted rounded animate-pulse"></div>
+                  <div className={cn(
+                    "bg-muted rounded animate-pulse",
+                    isMobile ? "h-48" : "h-64"
+                  )}></div>
                 </CardContent>
               </Card>
             ))}
@@ -305,21 +356,36 @@ const Reports = () => {
         ) : (
           <div className="grid gap-6">
             {/* Basic Reports - Available for all plans */}
-            <div className="grid gap-6 md:grid-cols-2">
+            <div className={cn(
+              "grid gap-6",
+              isMobile ? "grid-cols-1" : "md:grid-cols-2"
+            )}>
               <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Calendar className="w-5 h-5 text-gold" />
-                    Agendamentos por Mês
+                <CardHeader className={cn(
+                  isMobile && "pb-4"
+                )}>
+                  <CardTitle className={cn(
+                    "flex items-center gap-2",
+                    isMobile ? "text-lg" : "text-xl"
+                  )}>
+                    <Calendar className={cn(
+                      "text-gold",
+                      isMobile ? "w-4 h-4" : "w-5 h-5"
+                    )} />
+                    {isMobile ? "Agendamentos" : "Agendamentos por Mês"}
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="h-64">
+                <CardContent className={cn(
+                  isMobile && "px-4 pb-4"
+                )}>
+                  <div className={cn(
+                    isMobile ? "h-48" : "h-64"
+                  )}>
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={reportData.appointmentsByMonth}>
                         <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="month" />
-                        <YAxis />
+                        <XAxis dataKey="month" fontSize={isMobile ? 10 : 12} />
+                        <YAxis fontSize={isMobile ? 10 : 12} />
                         <Tooltip />
                         <Bar dataKey="appointments" fill="#E6B800" />
                       </BarChart>
@@ -329,23 +395,35 @@ const Reports = () => {
               </Card>
 
               <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Clock className="w-5 h-5 text-gold" />
-                    Status dos Agendamentos
+                <CardHeader className={cn(
+                  isMobile && "pb-4"
+                )}>
+                  <CardTitle className={cn(
+                    "flex items-center gap-2",
+                    isMobile ? "text-lg" : "text-xl"
+                  )}>
+                    <Clock className={cn(
+                      "text-gold",
+                      isMobile ? "w-4 h-4" : "w-5 h-5"
+                    )} />
+                    {isMobile ? "Status" : "Status dos Agendamentos"}
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="h-64">
+                <CardContent className={cn(
+                  isMobile && "px-4 pb-4"
+                )}>
+                  <div className={cn(
+                    isMobile ? "h-48" : "h-64"
+                  )}>
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
                         <Pie
                           data={reportData.appointmentsByStatus}
                           cx="50%"
                           cy="50%"
-                          outerRadius={80}
+                          outerRadius={isMobile ? 60 : 80}
                           dataKey="value"
-                          label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                          label={isMobile ? false : ({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                         >
                           {reportData.appointmentsByStatus.map((entry, index) => (
                             <Cell key={`cell-${index}`} fill={entry.color} />
@@ -360,23 +438,38 @@ const Reports = () => {
             </div>
 
             {/* Advanced Reports - Only for plans with advanced reports */}
-            <div className="grid gap-6 md:grid-cols-2">
+            <div className={cn(
+              "grid gap-6",
+              isMobile ? "grid-cols-1" : "md:grid-cols-2"
+            )}>
               {hasAdvancedReports ? (
                 <>
                   <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <TrendingUp className="w-5 h-5 text-gold" />
-                        Receita Mensal
+                    <CardHeader className={cn(
+                      isMobile && "pb-4"
+                    )}>
+                      <CardTitle className={cn(
+                        "flex items-center gap-2",
+                        isMobile ? "text-lg" : "text-xl"
+                      )}>
+                        <TrendingUp className={cn(
+                          "text-gold",
+                          isMobile ? "w-4 h-4" : "w-5 h-5"
+                        )} />
+                        {isMobile ? "Receita" : "Receita Mensal"}
                       </CardTitle>
                     </CardHeader>
-                    <CardContent>
-                      <div className="h-64">
+                    <CardContent className={cn(
+                      isMobile && "px-4 pb-4"
+                    )}>
+                      <div className={cn(
+                        isMobile ? "h-48" : "h-64"
+                      )}>
                         <ResponsiveContainer width="100%" height="100%">
                           <LineChart data={reportData.monthlyRevenue}>
                             <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="month" />
-                            <YAxis />
+                            <XAxis dataKey="month" fontSize={isMobile ? 10 : 12} />
+                            <YAxis fontSize={isMobile ? 10 : 12} />
                             <Tooltip formatter={(value) => [`R$ ${value}`, 'Receita']} />
                             <Line type="monotone" dataKey="revenue" stroke="#E6B800" strokeWidth={2} />
                           </LineChart>
@@ -386,18 +479,36 @@ const Reports = () => {
                   </Card>
 
                   <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <Users className="w-5 h-5 text-gold" />
-                        Top Clientes
+                    <CardHeader className={cn(
+                      isMobile && "pb-4"
+                    )}>
+                      <CardTitle className={cn(
+                        "flex items-center gap-2",
+                        isMobile ? "text-lg" : "text-xl"
+                      )}>
+                        <Users className={cn(
+                          "text-gold",
+                          isMobile ? "w-4 h-4" : "w-5 h-5"
+                        )} />
+                        {isMobile ? "Top Clientes" : "Top Clientes"}
                       </CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className={cn(
+                      isMobile && "px-4 pb-4"
+                    )}>
                       <div className="space-y-3">
                         {reportData.topClients.slice(0, 5).map((client: any, index) => (
-                          <div key={index} className="flex items-center justify-between">
-                            <span className="text-sm font-medium">{client.client}</span>
-                            <Badge variant="outline">{client.appointments} agendamentos</Badge>
+                          <div key={index} className={cn(
+                            "flex items-center justify-between",
+                            isMobile && "text-sm"
+                          )}>
+                            <span className={cn(
+                              "font-medium",
+                              isMobile ? "text-sm" : "text-sm"
+                            )}>{client.client}</span>
+                            <Badge variant="outline" className={cn(
+                              isMobile && "text-xs px-2 py-1"
+                            )}>{client.appointments} agendamentos</Badge>
                           </div>
                         ))}
                       </div>
@@ -416,16 +527,31 @@ const Reports = () => {
             <div className="grid gap-6">
               {hasAdvancedReports ? (
                 <Card>
-                  <CardHeader>
-                    <CardTitle>Performance por Profissional</CardTitle>
+                  <CardHeader className={cn(
+                    isMobile && "pb-4"
+                  )}>
+                    <CardTitle className={cn(
+                      "flex items-center gap-2",
+                      isMobile ? "text-lg" : "text-xl"
+                    )}>
+                      <Users className={cn(
+                        "text-gold",
+                        isMobile ? "w-4 h-4" : "w-5 h-5"
+                      )} />
+                      {isMobile ? "Performance" : "Performance por Profissional"}
+                    </CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <div className="h-64">
+                  <CardContent className={cn(
+                    isMobile && "px-4 pb-4"
+                  )}>
+                    <div className={cn(
+                      isMobile ? "h-48" : "h-64"
+                    )}>
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={reportData.professionalPerformance}>
                           <CartesianGrid strokeDasharray="3 3" />
-                          <XAxis dataKey="professional" />
-                          <YAxis />
+                          <XAxis dataKey="professional" fontSize={isMobile ? 10 : 12} />
+                          <YAxis fontSize={isMobile ? 10 : 12} />
                           <Tooltip />
                           <Bar dataKey="appointments" fill="#E6B800" name="Agendamentos" />
                         </BarChart>
@@ -434,13 +560,13 @@ const Reports = () => {
                   </CardContent>
                 </Card>
               ) : (
-                <UpgradePrompt title="Performance Detalhada por Profissional" />
+                <UpgradePrompt title={isMobile ? "Performance Detalhada" : "Performance Detalhada por Profissional"} />
               )}
             </div>
           </div>
         )}
       </div>
-    </DashboardLayout>
+    </AppLayout>
   );
 };
 

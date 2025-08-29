@@ -7,6 +7,8 @@ import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { ArrowLeft, Save, Plus, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { cn } from '@/lib/utils';
 
 interface ClientFormProps {
   clientId?: string | null;
@@ -16,6 +18,7 @@ interface ClientFormProps {
 
 const ClientForm: React.FC<ClientFormProps> = ({ clientId, onBack, onSave }) => {
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -108,22 +111,40 @@ const ClientForm: React.FC<ClientFormProps> = ({ clientId, onBack, onSave }) => 
   };
 
   return (
-    <div className="space-y-6">
+    <div className={cn(
+      "space-y-6",
+      isMobile && "space-y-4"
+    )}>
       {/* Header */}
-      <div className="flex items-center space-x-4">
+      <div className={cn(
+        "flex items-center space-x-4",
+        isMobile && "flex-col items-start space-y-3 space-x-0"
+      )}>
         <Button
           variant="ghost"
           onClick={onBack}
-          className="text-earth-600 hover:text-earth-800"
+          className={cn(
+            "text-earth-600 hover:text-earth-800",
+            isMobile && "self-start"
+          )}
         >
-          <ArrowLeft className="w-4 h-4 mr-2" />
+          <ArrowLeft className={cn(
+            "mr-2",
+            isMobile ? "w-5 h-5" : "w-4 h-4"
+          )} />
           Voltar
         </Button>
-        <div>
-          <h2 className="text-2xl font-bold text-earth-900">
+        <div className={isMobile ? "w-full" : ""}>
+          <h2 className={cn(
+            "font-bold text-earth-900",
+            isMobile ? "text-xl" : "text-2xl"
+          )}>
             {isEditing ? 'Editar Cliente' : 'Novo Cliente'}
           </h2>
-          <p className="text-earth-600">
+          <p className={cn(
+            "text-earth-600",
+            isMobile && "text-sm"
+          )}>
             {isEditing ? 'Atualize as informações do cliente' : 'Preencha os dados do novo cliente'}
           </p>
         </div>
@@ -131,11 +152,21 @@ const ClientForm: React.FC<ClientFormProps> = ({ clientId, onBack, onSave }) => 
 
       {/* Form */}
       <Card className="border-sand-200 shadow-soft">
-        <CardHeader>
-          <CardTitle className="text-earth-900">Informações do Cliente</CardTitle>
+        <CardHeader className={cn(
+          isMobile && "px-4 py-4"
+        )}>
+          <CardTitle className={cn(
+            "text-earth-900",
+            isMobile ? "text-lg" : "text-xl"
+          )}>Informações do Cliente</CardTitle>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
+        <CardContent className={cn(
+          isMobile && "px-4 pb-4"
+        )}>
+          <form onSubmit={handleSubmit} className={cn(
+            "space-y-6",
+            isMobile && "space-y-4"
+          )}>
             {/* Basic Information */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -257,21 +288,33 @@ const ClientForm: React.FC<ClientFormProps> = ({ clientId, onBack, onSave }) => 
             </div>
 
             {/* Actions */}
-            <div className="flex justify-end space-x-3 pt-6 border-t border-sand-200">
+            <div className={cn(
+              "flex pt-6 border-t border-sand-200",
+              isMobile ? "flex-col space-y-3" : "justify-end space-x-3"
+            )}>
               <Button
                 type="button"
                 variant="outline"
                 onClick={onBack}
-                className="border-sand-300 text-earth-700 hover:bg-sand-50"
+                className={cn(
+                  "border-sand-300 text-earth-700 hover:bg-sand-50",
+                  isMobile && "w-full h-12"
+                )}
               >
                 Cancelar
               </Button>
               <Button
                 type="submit"
                 disabled={loading}
-                className="bg-gold hover:bg-gold-600 text-earth-900 font-semibold"
+                className={cn(
+                  "bg-gold hover:bg-gold-600 text-earth-900 font-semibold",
+                  isMobile && "w-full h-12"
+                )}
               >
-                <Save className="w-4 h-4 mr-2" />
+                <Save className={cn(
+                  "mr-2",
+                  isMobile ? "w-5 h-5" : "w-4 h-4"
+                )} />
                 {loading ? 'Salvando...' : (isEditing ? 'Atualizar' : 'Salvar')}
               </Button>
             </div>

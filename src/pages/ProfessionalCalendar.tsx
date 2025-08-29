@@ -11,6 +11,9 @@ import { useAuth } from '@/hooks/useAuth';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import AppLayout from '@/components/Layout/AppLayout';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { cn } from '@/lib/utils';
 
 moment.locale('pt-br');
 const localizer = momentLocalizer(moment);
@@ -31,6 +34,7 @@ interface Appointment {
 const ProfessionalCalendar: React.FC = () => {
   const { signOut } = useAuth();
   const { profile } = useUserProfile();
+  const isMobile = useIsMobile();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
@@ -150,43 +154,67 @@ const ProfessionalCalendar: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="border-b bg-card">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold">Meus Agendamentos</h1>
-              <p className="text-muted-foreground">
-                Olá, {profile?.full_name || 'Profissional'}
-              </p>
-            </div>
-            <Button variant="outline" onClick={handleSignOut}>
-              <LogOut className="w-4 h-4 mr-2" />
-              Sair
-            </Button>
+    <AppLayout>
+      <div className={cn(
+        "animate-fade-in",
+        isMobile ? "space-y-4" : "space-y-6"
+      )}>
+        {/* Header */}
+        <div className={cn(
+          "flex items-center justify-between",
+          isMobile && "flex-col gap-4 items-start"
+        )}>
+          <div>
+            <h1 className={cn(
+              "font-bold text-foreground",
+              isMobile ? "text-2xl" : "text-3xl"
+            )}>Meus Agendamentos</h1>
+            <p className={cn(
+              "text-muted-foreground",
+              isMobile ? "text-sm" : "text-base"
+            )}>
+              Olá, {profile?.full_name || 'Profissional'}
+            </p>
           </div>
+          <Button 
+            variant="outline" 
+            onClick={handleSignOut}
+            className={cn(
+              isMobile && "w-full"
+            )}
+          >
+            <LogOut className="w-4 h-4 mr-2" />
+            Sair
+          </Button>
         </div>
-      </div>
-
-      <div className="container mx-auto px-4 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className={cn(
+          "grid gap-6",
+          isMobile ? "grid-cols-1" : "grid-cols-1 lg:grid-cols-3"
+        )}>
           {/* Calendar */}
-          <div className="lg:col-span-2">
+          <div className={cn(
+            isMobile ? "" : "lg:col-span-2"
+          )}>
             <Card>
-              <CardHeader>
-                <CardTitle>Calendário</CardTitle>
+              <CardHeader className={cn(
+                isMobile && "pb-4"
+              )}>
+                <CardTitle className={cn(
+                  isMobile ? "text-lg" : "text-xl"
+                )}>Calendário</CardTitle>
               </CardHeader>
-              <CardContent>
-                <div style={{ height: '600px' }}>
+              <CardContent className={cn(
+                isMobile && "px-4 pb-4"
+              )}>
+                <div style={{ height: isMobile ? '400px' : '600px' }}>
                   <Calendar
                     localizer={localizer}
                     events={appointments}
                     startAccessor="start"
                     endAccessor="end"
                     onSelectEvent={handleSelectEvent}
-                    views={['month', 'week', 'day']}
-                    defaultView="week"
+                    views={isMobile ? ['day', 'week'] : ['month', 'week', 'day']}
+                    defaultView={isMobile ? 'day' : 'week'}
                     messages={{
                       next: 'Próximo',
                       previous: 'Anterior',
@@ -214,61 +242,110 @@ const ProfessionalCalendar: React.FC = () => {
           {/* Appointment Details */}
           <div>
             <Card>
-              <CardHeader>
-                <CardTitle>Detalhes do Agendamento</CardTitle>
+              <CardHeader className={cn(
+                isMobile && "pb-4"
+              )}>
+                <CardTitle className={cn(
+                  isMobile ? "text-lg" : "text-xl"
+                )}>Detalhes do Agendamento</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className={cn(
+                isMobile && "px-4 pb-4"
+              )}>
                 {selectedAppointment ? (
-                  <div className="space-y-4">
+                  <div className={cn(
+                    isMobile ? "space-y-3" : "space-y-4"
+                  )}>
                     <div>
-                      <Badge className={getStatusColor(selectedAppointment.status)}>
+                      <Badge className={cn(
+                        getStatusColor(selectedAppointment.status),
+                        isMobile && "text-xs px-2 py-1"
+                      )}>
                         {getStatusText(selectedAppointment.status)}
                       </Badge>
                     </div>
                     
-                    <div className="space-y-3">
+                    <div className={cn(
+                      isMobile ? "space-y-2" : "space-y-3"
+                    )}>
                       <div className="flex items-center gap-2">
-                        <User className="w-4 h-4 text-muted-foreground" />
-                        <span className="font-medium">{selectedAppointment.client_name}</span>
+                        <User className={cn(
+                          "text-muted-foreground",
+                          isMobile ? "w-3 h-3" : "w-4 h-4"
+                        )} />
+                        <span className={cn(
+                          "font-medium",
+                          isMobile ? "text-sm" : "text-base"
+                        )}>{selectedAppointment.client_name}</span>
                       </div>
                       
                       {selectedAppointment.client_phone && (
                         <div className="flex items-center gap-2">
-                          <Phone className="w-4 h-4 text-muted-foreground" />
-                          <span>{selectedAppointment.client_phone}</span>
+                          <Phone className={cn(
+                            "text-muted-foreground",
+                            isMobile ? "w-3 h-3" : "w-4 h-4"
+                          )} />
+                          <span className={cn(
+                            isMobile ? "text-sm" : "text-base"
+                          )}>{selectedAppointment.client_phone}</span>
                         </div>
                       )}
                       
                       {selectedAppointment.client_email && (
                         <div className="flex items-center gap-2">
-                          <Mail className="w-4 h-4 text-muted-foreground" />
-                          <span>{selectedAppointment.client_email}</span>
+                          <Mail className={cn(
+                            "text-muted-foreground",
+                            isMobile ? "w-3 h-3" : "w-4 h-4"
+                          )} />
+                          <span className={cn(
+                            isMobile ? "text-sm" : "text-base"
+                          )}>{selectedAppointment.client_email}</span>
                         </div>
                       )}
                       
                       <div className="flex items-center gap-2">
-                        <Clock className="w-4 h-4 text-muted-foreground" />
-                        <span>
+                        <Clock className={cn(
+                          "text-muted-foreground",
+                          isMobile ? "w-3 h-3" : "w-4 h-4"
+                        )} />
+                        <span className={cn(
+                          isMobile ? "text-sm" : "text-base"
+                        )}>
                           {moment(selectedAppointment.start).format('DD/MM/YYYY HH:mm')} - 
                           {moment(selectedAppointment.end).format('HH:mm')}
                         </span>
                       </div>
                       
                       <div>
-                        <p className="font-medium mb-1">Serviço:</p>
-                        <p className="text-muted-foreground">{selectedAppointment.service_name}</p>
+                        <p className={cn(
+                          "font-medium mb-1",
+                          isMobile ? "text-sm" : "text-base"
+                        )}>Serviço:</p>
+                        <p className={cn(
+                          "text-muted-foreground",
+                          isMobile ? "text-sm" : "text-base"
+                        )}>{selectedAppointment.service_name}</p>
                       </div>
                       
                       {selectedAppointment.notes && (
                         <div>
-                          <p className="font-medium mb-1">Observações:</p>
-                          <p className="text-muted-foreground">{selectedAppointment.notes}</p>
+                          <p className={cn(
+                            "font-medium mb-1",
+                            isMobile ? "text-sm" : "text-base"
+                          )}>Observações:</p>
+                          <p className={cn(
+                            "text-muted-foreground",
+                            isMobile ? "text-sm" : "text-base"
+                          )}>{selectedAppointment.notes}</p>
                         </div>
                       )}
                     </div>
                   </div>
                 ) : (
-                  <p className="text-muted-foreground text-center py-8">
+                  <p className={cn(
+                    "text-muted-foreground text-center",
+                    isMobile ? "py-6 text-sm" : "py-8"
+                  )}>
                     Selecione um agendamento no calendário para ver os detalhes
                   </p>
                 )}
@@ -276,31 +353,61 @@ const ProfessionalCalendar: React.FC = () => {
             </Card>
 
             {/* Quick Stats */}
-            <Card className="mt-6">
-              <CardHeader>
-                <CardTitle>Resumo</CardTitle>
+            <Card className={cn(
+              isMobile ? "mt-4" : "mt-6"
+            )}>
+              <CardHeader className={cn(
+                isMobile && "pb-4"
+              )}>
+                <CardTitle className={cn(
+                  isMobile ? "text-lg" : "text-xl"
+                )}>Resumo</CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
+              <CardContent className={cn(
+                isMobile && "px-4 pb-4"
+              )}>
+                <div className={cn(
+                  isMobile ? "space-y-1.5" : "space-y-2"
+                )}>
                   <div className="flex justify-between">
-                    <span>Total de agendamentos:</span>
-                    <span className="font-medium">{appointments.length}</span>
+                    <span className={cn(
+                      isMobile ? "text-sm" : "text-base"
+                    )}>Total de agendamentos:</span>
+                    <span className={cn(
+                      "font-medium",
+                      isMobile ? "text-sm" : "text-base"
+                    )}>{appointments.length}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Confirmados:</span>
-                    <span className="font-medium text-green-600">
+                    <span className={cn(
+                      isMobile ? "text-sm" : "text-base"
+                    )}>Confirmados:</span>
+                    <span className={cn(
+                      "font-medium text-green-600",
+                      isMobile ? "text-sm" : "text-base"
+                    )}>
                       {appointments.filter(apt => apt.status === 'confirmed').length}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Agendados:</span>
-                    <span className="font-medium text-yellow-600">
+                    <span className={cn(
+                      isMobile ? "text-sm" : "text-base"
+                    )}>Agendados:</span>
+                    <span className={cn(
+                      "font-medium text-yellow-600",
+                      isMobile ? "text-sm" : "text-base"
+                    )}>
                       {appointments.filter(apt => apt.status === 'scheduled').length}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Concluídos:</span>
-                    <span className="font-medium text-blue-600">
+                    <span className={cn(
+                      isMobile ? "text-sm" : "text-base"
+                    )}>Concluídos:</span>
+                    <span className={cn(
+                      "font-medium text-blue-600",
+                      isMobile ? "text-sm" : "text-base"
+                    )}>
                       {appointments.filter(apt => apt.status === 'completed').length}
                     </span>
                   </div>
@@ -310,7 +417,7 @@ const ProfessionalCalendar: React.FC = () => {
           </div>
         </div>
       </div>
-    </div>
+    </AppLayout>
   );
 };
 

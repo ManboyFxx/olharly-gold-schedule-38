@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import DashboardLayout from '@/components/Dashboard/DashboardLayout';
+import AppLayout from '@/components/Layout/AppLayout';
 import ServiceManager from '@/components/Services/ServiceManager';
 import PublicServicesDisplay from '@/components/Services/PublicServicesDisplay';
 import { Briefcase, Globe } from 'lucide-react';
@@ -11,10 +11,10 @@ const Services = () => {
   const isMobile = useIsMobile();
   
   return (
-    <DashboardLayout>
+    <AppLayout>
       <div className={cn(
         "animate-fade-in",
-        isMobile ? "space-y-4 px-4" : "space-y-8"
+        isMobile ? "space-y-4" : "space-y-8"
       )}>
         {/* Header */}
         <div>
@@ -73,7 +73,7 @@ const Services = () => {
           </TabsContent>
         </Tabs>
       </div>
-    </DashboardLayout>
+    </AppLayout>
   );
 };
 

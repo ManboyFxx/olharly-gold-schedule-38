@@ -119,7 +119,7 @@ const UserManagement = () => {
     mutationFn: async ({ userId, isActive }: { userId: string; isActive: boolean }) => {
       // Prevent self-deactivation
       const currentUser = await supabase.auth.getUser();
-      if (currentUser.data.user?.id === userId && isActive) {
+      if (currentUser.data.user?.id === userId && !isActive) {
         throw new Error('Você não pode desativar sua própria conta');
       }
 
@@ -151,12 +151,54 @@ const UserManagement = () => {
     },
   });
 
+  // Delete user mutation
+  const deleteUserMutation = useMutation({
+    mutationFn: async (userId: string) => {
+      // Prevent self-deletion
+      const currentUser = await supabase.auth.getUser();
+      if (currentUser.data.user?.id === userId) {
+        throw new Error('Você não pode excluir sua própria conta');
+      }
+
+      // First deactivate the user
+      const { error: deactivateError } = await supabase
+        .from('users')
+        .update({ is_active: false })
+        .eq('id', userId);
+
+      if (deactivateError) throw deactivateError;
+
+      // Then delete from auth (this will cascade delete from users table)
+      const { error: deleteError } = await supabase.auth.admin.deleteUser(userId);
+      
+      if (deleteError) throw deleteError;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users', organization?.id] });
+      toast({
+        title: 'Usuário removido',
+        description: 'Usuário foi removido com sucesso.',
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: 'Erro',
+        description: error.message,
+        variant: 'destructive',
+      });
+    },
+  });
+
   const handleAddUser = (userData: NewUserForm) => {
     addUserMutation.mutate(userData);
   };
 
   const handleToggleUser = (userId: string, currentStatus: boolean) => {
     toggleUserMutation.mutate({ userId, isActive: !currentStatus });
+  };
+
+  const handleDeleteUser = (userId: string) => {
+    deleteUserMutation.mutate(userId);
   };
 
   if (isLoading) {
@@ -227,7 +269,9 @@ const UserManagement = () => {
             key={user.id}
             user={user}
             onToggleUser={handleToggleUser}
+            onDeleteUser={handleDeleteUser}
             isToggling={toggleUserMutation.isPending}
+            isDeleting={deleteUserMutation.isPending}
           />
         ))}
         

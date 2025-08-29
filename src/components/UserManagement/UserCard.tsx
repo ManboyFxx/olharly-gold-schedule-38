@@ -3,7 +3,8 @@ import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Users, Mail, Phone, Calendar, Settings } from 'lucide-react';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { Users, Mail, Phone, Calendar, Settings, Trash2 } from 'lucide-react';
 
 type UserRole = 'super_admin' | 'organization_admin' | 'professional' | 'client';
 
@@ -21,10 +22,12 @@ interface User {
 interface UserCardProps {
   user: User;
   onToggleUser: (userId: string, currentStatus: boolean) => void;
+  onDeleteUser: (userId: string) => void;
   isToggling: boolean;
+  isDeleting: boolean;
 }
 
-const UserCard: React.FC<UserCardProps> = ({ user, onToggleUser, isToggling }) => {
+const UserCard: React.FC<UserCardProps> = ({ user, onToggleUser, onDeleteUser, isToggling, isDeleting }) => {
   const getRoleBadge = (role: UserRole) => {
     const roleMap: Record<UserRole, { label: string; variant: 'default' | 'secondary' | 'outline' | 'destructive' }> = {
       'super_admin': { label: 'Super Admin', variant: 'default' },
@@ -78,8 +81,42 @@ const UserCard: React.FC<UserCardProps> = ({ user, onToggleUser, isToggling }) =
             onClick={() => onToggleUser(user.id, user.is_active)}
             disabled={isToggling || user.role === 'super_admin'}
           >
-            {user.is_active ? 'Desativar' : 'Ativar'}
+            {isToggling ? 'Processando...' : user.is_active ? 'Desativar' : 'Ativar'}
           </Button>
+          
+          {user.role !== 'super_admin' && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  disabled={isDeleting}
+                  className="text-destructive hover:text-destructive"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Confirmar remoção</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Tem certeza que deseja remover o usuário <strong>{user.full_name}</strong>? 
+                    Esta ação não pode ser desfeita e todos os dados associados serão perdidos.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => onDeleteUser(user.id)}
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  >
+                    {isDeleting ? 'Removendo...' : 'Remover'}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
+          
           <Button variant="ghost" size="sm">
             <Settings className="w-4 h-4" />
           </Button>

@@ -12,7 +12,6 @@ import { cn } from '@/lib/utils';
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
-  const [useMagicLink, setUseMagicLink] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
@@ -20,7 +19,7 @@ const Auth = () => {
     fullName: ''
   });
   
-  const { signIn, signInWithMagicLink, signUp } = useAuth();
+  const { signIn, signUp } = useAuth();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
 
@@ -30,39 +29,21 @@ const Auth = () => {
 
     try {
       if (isLogin) {
-        if (useMagicLink) {
-          const { error } = await signInWithMagicLink(formData.email);
-          if (error) {
-            toast({
-              title: 'Erro no envio do link',
-              description: error.message === 'User not found' 
-                ? 'Email não encontrado. Entre em contato com a administradora do espaço.' 
-                : 'Erro ao enviar link de acesso. Tente novamente.',
-              variant: 'destructive',
-            });
-          } else {
-            toast({
-              title: 'Link de acesso enviado!',
-              description: 'Verifique seu email e clique no link para acessar seu painel.',
-            });
-          }
+        const { error } = await signIn(formData.email, formData.password);
+        if (error) {
+          toast({
+            title: 'Erro no login',
+            description: error.message === 'Invalid login credentials' 
+              ? 'Email ou senha incorretos' 
+              : 'Erro ao fazer login. Tente novamente.',
+            variant: 'destructive',
+          });
         } else {
-          const { error } = await signIn(formData.email, formData.password);
-          if (error) {
-            toast({
-              title: 'Erro no login',
-              description: error.message === 'Invalid login credentials' 
-                ? 'Email ou senha incorretos' 
-                : 'Erro ao fazer login. Tente novamente.',
-              variant: 'destructive',
-            });
-          } else {
-            // O redirecionamento será feito pelo AuthProvider baseado no role
-            toast({
-              title: 'Login realizado com sucesso!',
-              description: 'Bem-vindo de volta ao Olharly',
-            });
-          }
+          // O redirecionamento será feito pelo AuthProvider baseado no role
+          toast({
+            title: 'Login realizado com sucesso!',
+            description: 'Bem-vindo de volta ao Olharly',
+          });
         }
       } else {
         const { error } = await signUp(formData.email, formData.password, formData.fullName);
@@ -175,23 +156,6 @@ const Auth = () => {
               </div>
             )}
             
-            {isLogin && (
-              <div className="space-y-4">
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    id="magicLink"
-                    checked={useMagicLink}
-                    onChange={(e) => setUseMagicLink(e.target.checked)}
-                    className="rounded border-input"
-                  />
-                  <Label htmlFor="magicLink" className="text-sm">
-                    Sou profissional - Receber link por email
-                  </Label>
-                </div>
-              </div>
-            )}
-            
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -206,22 +170,20 @@ const Auth = () => {
               />
             </div>
 
-            {!useMagicLink && (
-              <div className="space-y-2">
-                <Label htmlFor="password">Senha</Label>
-                <Input
-                  id="password"
-                  name="password"
-                  type="password"
-                  required={!useMagicLink}
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  className="input-elegant"
-                  placeholder="Digite sua senha"
-                  minLength={6}
-                />
-              </div>
-            )}
+            <div className="space-y-2">
+              <Label htmlFor="password">Senha</Label>
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                required
+                value={formData.password}
+                onChange={handleInputChange}
+                className="input-elegant"
+                placeholder="Digite sua senha"
+                minLength={6}
+              />
+            </div>
 
             <Button 
               type="submit" 
@@ -229,14 +191,8 @@ const Auth = () => {
               disabled={loading}
             >
               {loading 
-                ? (isLogin 
-                    ? (useMagicLink ? 'Enviando link...' : 'Entrando...') 
-                    : 'Criando conta...'
-                  ) 
-                : (isLogin 
-                    ? (useMagicLink ? 'Enviar link de acesso' : 'Entrar') 
-                    : 'Criar conta'
-                  )
+                ? (isLogin ? 'Entrando...' : 'Criando conta...')
+                : (isLogin ? 'Entrar' : 'Criar conta')
               }
             </Button>
           </form>

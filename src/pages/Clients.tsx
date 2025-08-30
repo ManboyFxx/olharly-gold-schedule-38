@@ -4,6 +4,7 @@ import DashboardLayout from '@/components/Dashboard/DashboardLayout';
 import ClientsList from '@/components/Clients/ClientsList';
 import ClientForm from '@/components/Clients/ClientForm';
 import ClientProfile from '@/components/Clients/ClientProfile';
+import { WhatsAppManager } from '@/components/Clients/WhatsAppManager';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';

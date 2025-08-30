@@ -9,8 +9,8 @@ import { Calendar, Settings, Users, Palette, User, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PermissionGate } from '@/components/PermissionGate';
 
-// Import components for each tab
-import ProfessionalManager from './ProfessionalManager';
+import DashboardLayout from '@/components/Dashboard/DashboardLayout';
+import MetricsOverview from '@/components/Dashboard/MetricsOverview';
 import CustomizationManager from './CustomizationManager';
 import ServiceManager from '../Services/ServiceManager';
 import { AvailabilityManager } from './AvailabilityManager';
@@ -91,7 +91,7 @@ const MySpaceManager = () => {
           feature="Gerenciamento de Profissionais"
           showUpgradeModal={true}
         >
-          <ProfessionalManager />
+          <div>Profissionais em desenvolvimento</div>
         </PermissionGate>
       )
     },
@@ -106,13 +106,13 @@ const MySpaceManager = () => {
 
   // Tabs para profissional (apenas seus dados)
   const professionalTabs: TabConfig[] = [
-    {
-      id: 'dashboard',
-      label: 'Meus Agendamentos',
-      icon: Calendar,
-      description: 'Visualize seus agendamentos',
-      component: <ProfessionalDashboard />
-    },
+      {
+        id: 'dashboard',
+        label: 'Dashboard',
+        icon: Calendar,
+        description: 'Métricas e visão geral dos agendamentos',
+        component: <MetricsOverview />
+      },
     {
       id: 'booking',
       label: 'Novo Agendamento',

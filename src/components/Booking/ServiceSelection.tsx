@@ -17,6 +17,7 @@ interface ServiceSelectionProps {
   selectedProfessionalId?: string;
   services?: Service[];
   onSelect: (serviceId: string) => void;
+  onBack?: () => void;
 }
 
 export const ServiceSelection = ({ organizationId, selectedProfessionalId, services: propServices, onSelect }: ServiceSelectionProps) => {

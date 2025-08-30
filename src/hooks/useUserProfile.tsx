@@ -6,7 +6,7 @@ interface UserProfile {
   id: string;
   email: string;
   full_name: string;
-  role: 'organization_admin' | 'professional';
+  role: 'super_admin' | 'organization_admin' | 'professional' | 'client';
   organization_id?: string;
   created_at: string;
   updated_at: string;

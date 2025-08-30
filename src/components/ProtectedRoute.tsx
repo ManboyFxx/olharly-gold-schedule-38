@@ -5,7 +5,7 @@ import { useUserProfile } from '@/hooks/useUserProfile';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  allowedRoles?: ('organization_admin' | 'professional')[];
+  allowedRoles?: ('super_admin' | 'organization_admin' | 'professional' | 'client')[];
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles }) => {

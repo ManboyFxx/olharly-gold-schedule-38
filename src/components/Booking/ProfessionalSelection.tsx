@@ -35,7 +35,7 @@ export const ProfessionalSelection = ({
     const fetchProfessionals = async () => {
       const { data, error } = await supabase
         .from('users')
-        .select('id, full_name, display_name, title, avatar_url, bio')
+        .select('id, full_name, title, avatar_url, bio')
         .eq('organization_id', organizationId)
         .in('role', ['professional', 'organization_admin'])
         .eq('is_active', true)
@@ -99,7 +99,7 @@ export const ProfessionalSelection = ({
               </div>
               <div className="flex-1">
                 <h3 className="font-medium text-[#2A2621] mb-1">
-                  {professional.display_name || professional.full_name}
+                  {professional.full_name}
                 </h3>
                 {professional.title && (
                   <p className="text-sm text-[#2A2621]/70 mb-1">

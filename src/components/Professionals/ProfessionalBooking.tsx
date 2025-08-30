@@ -58,7 +58,8 @@ const ProfessionalBooking = () => {
   // Filtrar profissionais ativos da mesma organização
   const availableProfessionals = professionals.filter(p => 
     (p.role === 'professional' || p.role === 'organization_admin') && 
-    p.organization_id === currentUser?.organization_id
+    p.organization_id === currentUser?.organization_id &&
+    p.is_active
   );
 
   const selectedService = services.find(s => s.id === formData.service_id);

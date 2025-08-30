@@ -22,6 +22,8 @@ interface ProfessionalProfile {
   phone?: string;
   specialties?: string[];
   role: UserRole;
+  organization_id?: string;
+  is_active: boolean;
 }
 
 export const useProfiles = () => {

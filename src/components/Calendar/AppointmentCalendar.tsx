@@ -10,11 +10,13 @@ import { toast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 import AppointmentForm from './AppointmentForm';
+import { AppointmentStatusManager } from './AppointmentStatusManager';
 
 interface Appointment {
   id: string;
   client_name: string;
   client_email: string;
+  client_phone?: string;
   service_id: string;
   scheduled_at: string;
   duration_minutes: number;
@@ -380,18 +382,19 @@ const AppointmentCalendar = () => {
                   )}
                   
                   <div className="flex space-x-2 pt-2">
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => handleEditAppointment(appointment.id)}
-                      className="flex-1 h-10"
-                    >
-                      <Edit className="w-4 h-4 mr-2" />
-                      Editar
-                    </Button>
-                    <Button variant="outline" size="sm" className="flex-1 h-10">
-                      Contato
-                    </Button>
+                    <AppointmentStatusManager 
+                      appointment={{
+                        id: appointment.id,
+                        client_name: appointment.client_name,
+                        client_email: appointment.client_email,
+                        client_phone: appointment.client_phone,
+                        status: appointment.status,
+                        scheduled_at: appointment.scheduled_at,
+                        services: appointment.services
+                      }}
+                      onUpdate={fetchAppointments}
+                      isMobile={isMobile}
+                    />
                   </div>
                 </>
               ) : (
@@ -433,17 +436,18 @@ const AppointmentCalendar = () => {
                   </div>
 
                   <div className="flex items-center space-x-2">
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => handleEditAppointment(appointment.id)}
-                    >
-                      <Edit className="w-4 h-4 mr-1" />
-                      Editar
-                    </Button>
-                    <Button variant="outline" size="sm">
-                      Contato
-                    </Button>
+                    <AppointmentStatusManager 
+                      appointment={{
+                        id: appointment.id,
+                        client_name: appointment.client_name,
+                        client_email: appointment.client_email,
+                        client_phone: appointment.client_phone,
+                        status: appointment.status,
+                        scheduled_at: appointment.scheduled_at,
+                        services: appointment.services
+                      }}
+                      onUpdate={fetchAppointments}
+                    />
                   </div>
                 </>
               )}

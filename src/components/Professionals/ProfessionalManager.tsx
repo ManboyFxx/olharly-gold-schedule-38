@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Edit2, Save, X, UserPlus } from 'lucide-react';
+import { Edit2, Save, X, UserPlus, Trash2 } from 'lucide-react';
 import { useProfiles } from '@/hooks/useProfiles';
 import { useOrganization } from '@/hooks/useOrganization';
 import { useAuth } from '@/hooks/useAuth';
@@ -48,10 +48,19 @@ const ProfessionalManager = () => {
     role: 'professional'
   });
   const [isAdding, setIsAdding] = useState(false);
+  const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
+  const [professionalToRemove, setProfessionalToRemove] = useState<ProfessionalProfile | null>(null);
+  const [isRemoving, setIsRemoving] = useState(false);
 
   // Função para verificar se um profissional pode ser editado
   const canEditProfessional = (professional: ProfessionalProfile) => {
     // O Admin (organization_admin) não pode ser editado
+    return professional.role !== 'organization_admin';
+  };
+
+  // Função para verificar se um profissional pode ser removido
+  const canRemoveProfessional = (professional: ProfessionalProfile) => {
+    // O Admin (organization_admin) não pode ser removido
     return professional.role !== 'organization_admin';
   };
 
@@ -70,6 +79,50 @@ const ProfessionalManager = () => {
       setEditingProfile(null);
       setFormData({});
     }
+  };
+
+  const handleRemoveProfessional = async () => {
+    if (!professionalToRemove) return;
+    
+    setIsRemoving(true);
+    try {
+      // Remover o profissional da organização
+      const { error } = await supabase
+        .from('users')
+        .update({ 
+          organization_id: null,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', professionalToRemove.id);
+
+      if (error) throw error;
+
+      toast({
+        title: 'Profissional removido!',
+        description: `${professionalToRemove.full_name} foi removido da organização.`,
+      });
+      
+      setIsRemoveModalOpen(false);
+      setProfessionalToRemove(null);
+      
+      // Atualizar a lista de profissionais
+      refetch();
+      
+    } catch (error: any) {
+      console.error('Error removing professional:', error);
+      toast({
+        title: 'Erro ao remover profissional',
+        description: error.message || 'Ocorreu um erro ao remover o profissional.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsRemoving(false);
+    }
+  };
+
+  const openRemoveModal = (professional: ProfessionalProfile) => {
+    setProfessionalToRemove(professional);
+    setIsRemoveModalOpen(true);
   };
 
   const handleCancel = () => {
@@ -232,16 +285,28 @@ const ProfessionalManager = () => {
                         </Button>
                       </>
                     ) : (
-                      canEditProfessional(professional) && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleEdit(professional)}
-                        >
-                          <Edit2 className="h-4 w-4 mr-1" />
-                          Editar
-                        </Button>
-                      )
+                      <>
+                        {canEditProfessional(professional) && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleEdit(professional)}
+                          >
+                            <Edit2 className="h-4 w-4 mr-1" />
+                            Editar
+                          </Button>
+                        )}
+                        {canRemoveProfessional(professional) && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => openRemoveModal(professional)}
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </>
                     )}
                   </div>
                 </div>
@@ -385,8 +450,44 @@ const ProfessionalManager = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Remove Professional Modal */}
+      <Dialog open={isRemoveModalOpen} onOpenChange={setIsRemoveModalOpen}>
+        <DialogContent aria-describedby="remove-professional-description">
+          <DialogHeader>
+            <DialogTitle>Remover Profissional</DialogTitle>
+          </DialogHeader>
+          <div id="remove-professional-description" className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Tem certeza que deseja remover <strong>{professionalToRemove?.full_name}</strong> da organização?
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Esta ação irá remover o profissional da organização, mas não excluirá a conta do usuário.
+              O profissional poderá ser adicionado novamente posteriormente.
+            </p>
+            
+            <div className="flex gap-2 pt-4">
+              <Button 
+                variant="destructive"
+                onClick={handleRemoveProfessional}
+                disabled={isRemoving}
+                className="flex-1"
+              >
+                {isRemoving ? 'Removendo...' : 'Remover'}
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={() => setIsRemoveModalOpen(false)}
+                disabled={isRemoving}
+              >
+                Cancelar
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
-  );
-};
+   );
+ };
 
 export default ProfessionalManager;
